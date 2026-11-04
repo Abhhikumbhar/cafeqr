@@ -1,0 +1,291 @@
+import React, { useState } from 'react';
+import { useCafe } from '../../context/CafeContext';
+import {
+  Settings,
+  Coffee,
+  Volume2,
+  VolumeX,
+  Sparkles,
+  RotateCcw,
+  Save,
+  ShieldCheck,
+  Building,
+  Phone,
+  Mail,
+  Percent,
+  CheckCircle2
+} from 'lucide-react';
+
+export default function SettingsPage() {
+  const { settings, setSettings, voice, resetDemoData, addToast } = useCafe();
+  const [form, setForm] = useState({ ...settings });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    setSettings(prev => ({
+      ...prev,
+      ...form,
+      gstPercentage: Number(form.gstPercentage) || 5,
+      tableCount: Number(form.tableCount) || 12,
+      fifthVisitDiscount: Number(form.fifthVisitDiscount) || 50,
+      minOrderForLoyalty: Number(form.minOrderForLoyalty) || 150
+    }));
+    addToast('Cafe configuration saved successfully', 'success');
+  };
+
+  return (
+    <div className="space-y-6 max-w-4xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-[#241A14] flex items-center gap-2">
+            <Settings className="w-6 h-6 text-[#5C3A21]" />
+            CafeFlow System Settings
+          </h2>
+          <p className="text-xs text-[#8A7A6E]">
+            Brand information, tax rates, voice speech preferences, and loyalty program rules.
+          </p>
+        </div>
+
+        <button
+          onClick={handleSave}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-bold shadow-md transition-all self-start sm:self-auto"
+        >
+          <Save className="w-4 h-4" />
+          <span>Save Changes</span>
+        </button>
+      </div>
+
+      <form onSubmit={handleSave} className="space-y-6">
+        {/* Cafe Profile Section */}
+        <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+          <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+            <Coffee className="w-5 h-5 text-[#E58A3A]" />
+            Cafe Identity & Location
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Cafe Name *
+              </label>
+              <input
+                type="text"
+                name="cafeName"
+                value={form.cafeName}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Tagline / Concept
+              </label>
+              <input
+                type="text"
+                name="tagline"
+                value={form.tagline}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Physical Address (Printed on Receipts)
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Contact Phone
+              </label>
+              <input
+                type="text"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                GST / Tax Registration Number
+              </label>
+              <input
+                type="text"
+                name="gstNumber"
+                value={form.gstNumber}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Financial & Tax Configurations */}
+        <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+          <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+            <Percent className="w-5 h-5 text-[#5C3A21]" />
+            Taxation & Table Scale
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                GST Tax Rate (%)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                name="gstPercentage"
+                value={form.gstPercentage}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Total Seating Tables Count
+              </label>
+              <input
+                type="number"
+                name="tableCount"
+                value={form.tableCount}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Currency Symbol
+              </label>
+              <input
+                type="text"
+                name="currency"
+                value={form.currency}
+                onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Voice Announcement Engine Settings */}
+        <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+              <Volume2 className="w-5 h-5 text-[#E58A3A]" />
+              Voice Announcement Engine (SpeechSynthesis API)
+            </h3>
+            <button
+              type="button"
+              onClick={voice.triggerTestVoice}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-[#5C3A21] border border-amber-200 text-xs font-bold hover:bg-amber-100 transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#E58A3A]" />
+              <span>Test Audio Alert</span>
+            </button>
+          </div>
+
+          <p className="text-xs text-[#8A7A6E]">
+            Automatically announces live orders to Kitchen and Admin with table number and ordered items.
+          </p>
+
+          <div className="space-y-4 pt-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="voiceEnabled"
+                checked={form.voiceEnabled}
+                onChange={handleChange}
+                className="w-5 h-5 rounded text-[#E58A3A] focus:ring-[#E58A3A]"
+              />
+              <span className="text-xs font-bold text-[#241A14]">
+                Enable Speech Synthesis announcements for new customer orders
+              </span>
+            </label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label className="text-xs font-semibold text-[#665A4F] block mb-1">
+                  Speech Cadence / Rate ({form.voiceRate || 1.0}x)
+                </label>
+                <input
+                  type="range"
+                  min="0.7"
+                  max="1.3"
+                  step="0.05"
+                  name="voiceRate"
+                  value={form.voiceRate || 1.0}
+                  onChange={handleChange}
+                  className="w-full accent-[#E58A3A]"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[#665A4F] block mb-1">
+                  Volume Level ({Math.round((form.voiceVolume || 1.0) * 100)}%)
+                </label>
+                <input
+                  type="range"
+                  min="0.2"
+                  max="1.0"
+                  step="0.1"
+                  name="voiceVolume"
+                  value={form.voiceVolume || 1.0}
+                  onChange={handleChange}
+                  className="w-full accent-[#E58A3A]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Demo Data Management */}
+        <div className="bg-[#FAF7F2] rounded-3xl p-6 border border-[#E8E0D5] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="font-extrabold text-sm text-[#241A14]">
+              Demo Mode & Persistent Storage
+            </h4>
+            <p className="text-xs text-[#8A7A6E] mt-0.5">
+              Reset demo orders, 12 tables, customer visits, and menu items to initial pristine showcase data.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('Reset all demo state to fresh presentation data?')) {
+                resetDemoData();
+              }
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-[#E8E0D5] text-[#5C3A21] hover:bg-gray-50 text-xs font-bold shadow-sm transition-all"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>Reset Demo Data</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

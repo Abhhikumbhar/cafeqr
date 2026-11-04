@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-warm-cream: #F8F5F0;
+  --color-cream-light: #FDFBF7;
+  --color-coffee: #5C3A21;
+  --color-coffee-hover: #4B2E19;
+  --color-espresso: #241A14;
+  --color-espresso-dark: #19120D;
+  --color-accent-orange: #E58A3A;
+  --color-accent-hover: #D77A28;
+  --color-warm-border: #E8E0D5;
+  --color-warm-text: #665A4F;
+  --color-warm-subtle: #8A7A6E;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #F8F5F0;
+  color: #241A14;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar for cafe aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1ECE4;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8BAAA;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8C532B;
+}
+
+/* Print styles for Receipts and QR codes */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-area, .printable-area * {
+    visibility: visible;
+  }
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10px;
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
