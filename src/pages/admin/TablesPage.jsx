@@ -234,7 +234,7 @@ export default function TablesPage() {
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Coffee className="w-5 h-5 text-[#E58A3A]" />
                 <span className="font-extrabold text-base tracking-tight text-[#241A14]">
-                  {settings.cafeName || 'CafeFlow'}
+                  {settings.cafeName || 'Sairam Chahawala'}
                 </span>
               </div>
               <p className="text-[11px] text-[#8A7A6E] mb-4">

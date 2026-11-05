@@ -27,7 +27,14 @@ export function CafeProvider({ children }) {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-      return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.cafeName === 'CafeFlow Artisan Roasters' || !parsed.cafeName) {
+          parsed.cafeName = INITIAL_SETTINGS.cafeName;
+        }
+        return parsed;
+      }
+      return INITIAL_SETTINGS;
     } catch {
       return INITIAL_SETTINGS;
     }
@@ -423,7 +430,7 @@ export function CafeProvider({ children }) {
             minBill: 250,
             isLocked: false
           });
-          loyaltyBonusMessage = '🎉 Welcome to CafeFlow! 10% Welcome Reward unlocked!';
+          loyaltyBonusMessage = '🎉 Welcome to Sairam Chahawala! 10% Welcome Reward unlocked!';
         }
         // 3rd visit: Special Reward
         else if (newVisits === 3) {

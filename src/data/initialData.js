@@ -1,10 +1,10 @@
-// CafeFlow Initial Seed Data
+// Sairam Chahawala Initial Seed Data
 export const INITIAL_SETTINGS = {
-  cafeName: "CafeFlow Artisan Roasters",
-  tagline: "Smart Specialty Coffee & Gourmet Kitchen",
-  address: "Plot 42, Silicon Boulevard, Koramangala 4th Block, Bengaluru, KA 560034",
+  cafeName: "Sairam Chahawala",
+  tagline: "Specialty Tea, Refreshments & Gourmet Fast Food",
+  address: "Shop No. 1, Main Road, Maharashtra",
   phone: "+91 98765 43210",
-  email: "hello@cafeflow.com",
+  email: "contact@sairamchahawala.com",
   gstNumber: "29AAAAA0000A1Z5",
   gstPercentage: 5,
   tableCount: 12,

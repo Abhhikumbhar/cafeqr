@@ -67,14 +67,11 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
                 <Coffee className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="font-bold text-lg text-white tracking-tight flex items-center gap-1">
-                  CafeFlow
-                  <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[#E58A3A]/30 text-[#E58A3A] font-extrabold border border-[#E58A3A]/40">
-                    Smart
-                  </span>
+                <h1 className="font-bold text-sm text-white tracking-tight leading-tight">
+                  {settings.cafeName || 'Sairam Chahawala'}
                 </h1>
-                <p className="text-[11px] text-[#A8988B] truncate max-w-[140px]">
-                  {settings.cafeName || 'Specialty Roastery'}
+                <p className="text-[10px] text-[#A8988B] truncate max-w-[140px] uppercase tracking-wider font-semibold">
+                  Smart Cafe POS
                 </p>
               </div>
             </Link>

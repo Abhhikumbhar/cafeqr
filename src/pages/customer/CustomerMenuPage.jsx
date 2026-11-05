@@ -212,7 +212,7 @@ export default function CustomerMenuPage() {
           </div>
           <div>
             <h1 className="font-extrabold text-sm text-[#241A14] tracking-tight flex items-center gap-1.5">
-              {settings.cafeName || 'CafeFlow'}
+              {settings.cafeName || 'Sairam Chahawala'}
             </h1>
             <p className="text-[10px] text-[#8A7A6E]">Digital Table Service</p>
           </div>

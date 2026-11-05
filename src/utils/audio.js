@@ -144,7 +144,7 @@ export function announceNewOrder(order, options = {}) {
 
 // Voice test announcement
 export function testVoiceAnnouncement(options = {}) {
-  const testText = "CafeFlow voice announcement system active. Ready for live customer orders.";
+  const testText = "Sairam Chahawala voice announcement system active. Ready for live customer orders.";
   speakAnnouncement(testText, options);
   return testText;
 }
