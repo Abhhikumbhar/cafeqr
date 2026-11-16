@@ -95,6 +95,24 @@ export default function KitchenPage({ isFullscreen = false }) {
         </div>
       </div>
 
+      {/* KOT Voice Alert Banner */}
+      <div className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 text-xs ${
+        isFullscreen ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <Volume2 className="w-4 h-4 text-emerald-600 shrink-0 animate-pulse" />
+          <span className="font-semibold">
+            <strong>KOT Voice Alarm Active:</strong> ग्राहक मोबाईलवरून ऑर्डर देताच थेट येथे किचनमध्ये मोठ्या आवाजात अनाउन्समेंट होईल.
+          </span>
+        </div>
+        <button
+          onClick={voice.triggerTestVoice}
+          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 shadow-sm transition-all"
+        >
+          Check Audio
+        </button>
+      </div>
+
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[

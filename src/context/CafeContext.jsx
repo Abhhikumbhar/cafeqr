@@ -153,6 +153,16 @@ export function CafeProvider({ children }) {
   const handleIncomingOrder = (order) => {
     if (!order || !order.id) return;
 
+    // Do NOT play kitchen voice if current device is a customer viewing the menu (/menu)
+    const isCustomerScreen = typeof window !== 'undefined' && window.location.pathname.startsWith('/menu');
+    if (isCustomerScreen) {
+      setOrders(prev => {
+        if (prev.some(o => o.id === order.id)) return prev;
+        return [order, ...prev];
+      });
+      return;
+    }
+
     setOrders(prev => {
       if (prev.some(o => o.id === order.id)) return prev;
       return [order, ...prev];
@@ -168,7 +178,7 @@ export function CafeProvider({ children }) {
       );
     }
 
-    // Voice announcement if enabled & not yet announced
+    // Voice announcement plays loudly on KOT Screen (Kitchen) and Admin Screen!
     if (settings.voiceEnabled && !announcedOrderIdsRef.current.has(order.id)) {
       announcedOrderIdsRef.current.add(order.id);
       localStorage.setItem(
@@ -381,21 +391,25 @@ export function CafeProvider({ children }) {
       updateTableStatus(orderData.tableId, 'Order Pending', orderId);
     }
 
-    // Voice announcement if enabled & not announced
-    if (settings.voiceEnabled && !announcedOrderIdsRef.current.has(orderId)) {
-      announcedOrderIdsRef.current.add(orderId);
-      localStorage.setItem(
-        STORAGE_KEYS.ANNOUNCED_ORDERS,
-        JSON.stringify([...announcedOrderIdsRef.current])
-      );
-      const spokenText = announceNewOrder(newOrder, {
-        rate: settings.voiceRate || 1.0,
-        pitch: settings.voicePitch || 1.0,
-        volume: settings.voiceVolume || 1.0
-      });
-      setLastVoiceAlert(spokenText);
-    } else {
-      playChimeSound();
+    // Voice announcement ONLY on counter/kitchen device, NOT on customer mobile self-ordering screen!
+    const isCustomerDevice = typeof window !== 'undefined' && window.location.pathname.startsWith('/menu');
+
+    if (!isCustomerDevice && !orderData.silentLocal) {
+      if (settings.voiceEnabled && !announcedOrderIdsRef.current.has(orderId)) {
+        announcedOrderIdsRef.current.add(orderId);
+        localStorage.setItem(
+          STORAGE_KEYS.ANNOUNCED_ORDERS,
+          JSON.stringify([...announcedOrderIdsRef.current])
+        );
+        const spokenText = announceNewOrder(newOrder, {
+          rate: settings.voiceRate || 1.0,
+          pitch: settings.voicePitch || 1.0,
+          volume: settings.voiceVolume || 1.0
+        });
+        setLastVoiceAlert(spokenText);
+      } else {
+        playChimeSound();
+      }
     }
 
     // Broadcast to Cloud Relay (Phone ➔ Laptop) and local BroadcastChannel
