@@ -68,7 +68,7 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
               </div>
               <div>
                 <h1 className="font-bold text-sm text-white tracking-tight leading-tight">
-                  {settings.cafeName || 'Sairam Chahawala'}
+                  {settings.cafeName || 'The 7 Cafe'}
                 </h1>
                 <p className="text-[10px] text-[#A8988B] truncate max-w-[140px] uppercase tracking-wider font-semibold">
                   Smart Cafe POS
@@ -153,7 +153,7 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
           </div>
 
           <div className="mt-3 flex items-center justify-between text-[11px] text-[#8A7A6E] px-1">
-            <span>Sairam Chahawala</span>
+            <span>The 7 Cafe</span>
             <span className="flex items-center gap-1 text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               100% Offline/Sync

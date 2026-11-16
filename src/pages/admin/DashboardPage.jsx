@@ -78,7 +78,7 @@ export default function DashboardPage() {
             <span className="text-xs text-[#C8BAAA]">Live System</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {settings.cafeName || 'Sairam Chahawala'}
+            {settings.cafeName || 'The 7 Cafe'}
           </h2>
           <p className="text-sm text-[#C8BAAA] mt-1">
             Seamless table management, QR self-ordering, automated kitchen display, and loyalty perks.

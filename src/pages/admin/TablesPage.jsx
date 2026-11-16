@@ -280,7 +280,7 @@ export default function TablesPage() {
               <div className="flex items-center justify-center gap-2 mb-1">
                 <Coffee className="w-5 h-5 text-[#E58A3A]" />
                 <span className="font-extrabold text-lg tracking-tight text-[#241A14]">
-                  {settings.cafeName || 'Sairam Chahawala'}
+                  {settings.cafeName || 'The 7 Cafe'}
                 </span>
               </div>
               <p className="text-[11px] text-[#8A7A6E] mb-3">
@@ -378,7 +378,7 @@ export default function TablesPage() {
                   <div className="flex items-center justify-center gap-1.5 mb-1">
                     <Coffee className="w-4 h-4 text-[#E58A3A]" />
                     <span className="font-extrabold text-sm text-[#241A14]">
-                      {settings.cafeName || 'Sairam Chahawala'}
+                      {settings.cafeName || 'The 7 Cafe'}
                     </span>
                   </div>
 

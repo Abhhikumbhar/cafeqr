@@ -1,10 +1,10 @@
-// Sairam Chahawala Clean Initial Data
+// The 7 Cafe Clean Initial Data
 export const INITIAL_SETTINGS = {
-  cafeName: "Sairam Chahawala",
-  tagline: "Specialty Tea, Refreshments & Snacks",
+  cafeName: "The 7 Cafe",
+  tagline: "Coffee, Refreshments & Conversations",
   address: "Shop No. 1, Main Road, Maharashtra",
   phone: "+91 98765 43210",
-  email: "contact@sairamchahawala.com",
+  email: "contact@the7cafe.com",
   gstNumber: "27AAAAA0000A1Z5",
   gstPercentage: 5,
   tableCount: 10,
@@ -20,7 +20,7 @@ export const INITIAL_SETTINGS = {
   qrBaseUrl: "", // Optional live domain for printing permanent QR codes
 };
 
-// Exactly 10 Permanent Tables for Sairam Chahawala
+// Exactly 10 Permanent Tables for The 7 Cafe
 export const INITIAL_TABLES = [
   { id: "T-01", number: 1, name: "Table 01", capacity: 2, status: "Available", activeOrderId: null, qrCodeData: "Table-01" },
   { id: "T-02", number: 2, name: "Table 02", capacity: 4, status: "Available", activeOrderId: null, qrCodeData: "Table-02" },
@@ -44,7 +44,7 @@ export const CATEGORIES = [
   "Desserts"
 ];
 
-// Clean Real Menu for Sairam Chahawala
+// Clean Real Menu for The 7 Cafe
 export const INITIAL_MENU_ITEMS = [
   // TEA & CHAI
   {
@@ -222,5 +222,5 @@ export const INITIAL_ORDERS = [];
 // Clean Active Coupons
 export const INITIAL_COUPONS = [
   { code: "CHAI10", discountPercent: 10, maxDiscount: 50, minBill: 100, description: "10% off on orders above ₹100", active: true },
-  { code: "SAIRAM20", discount: 20, minBill: 150, description: "₹20 flat discount on bill above ₹150", active: true }
+  { code: "THE7CAFE20", discount: 20, minBill: 150, description: "₹20 flat discount on bill above ₹150", active: true }
 ];

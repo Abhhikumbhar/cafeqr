@@ -1,7 +1,7 @@
-// Real-time Cloud Synchronization Bridge for Sairam Chahawala
+// Real-time Cloud Synchronization Bridge for The 7 Cafe
 // Enables instant mobile-to-laptop order transmission across different devices and networks
 
-const DEFAULT_SYNC_CHANNEL = 'sairam_chahawala_kot_prod';
+const DEFAULT_SYNC_CHANNEL = 'the_7_cafe_kot_prod';
 
 // Helper to get or create unique cafe sync channel ID
 export function getSyncChannel(settings) {

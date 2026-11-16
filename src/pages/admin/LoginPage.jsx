@@ -39,7 +39,7 @@ export default function LoginPage() {
             <Coffee className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-black text-[#241A14] tracking-tight">
-            Sairam Chahawala
+            The 7 Cafe
           </h1>
           <p className="text-xs text-[#8A7A6E]">
             Smart Cafe Management & Multi-Table POS System

@@ -35,8 +35,8 @@ export function CafeProvider({ children }) {
       const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.cafeName === 'CafeFlow Artisan Roasters' || !parsed.cafeName) {
-          parsed.cafeName = INITIAL_SETTINGS.cafeName;
+        if (parsed.cafeName === 'CafeFlow Artisan Roasters' || parsed.cafeName === 'Sairam Chahawala' || !parsed.cafeName) {
+          parsed.cafeName = 'The 7 Cafe';
         }
         return parsed;
       }
@@ -566,7 +566,7 @@ export function CafeProvider({ children }) {
             minBill: 250,
             isLocked: false
           });
-          loyaltyBonusMessage = '🎉 Welcome to Sairam Chahawala! 10% Welcome Reward unlocked!';
+          loyaltyBonusMessage = '🎉 Welcome to The 7 Cafe! 10% Welcome Reward unlocked!';
         }
         // 3rd visit: Special Reward
         else if (newVisits === 3) {

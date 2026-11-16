@@ -48,7 +48,7 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-2xl font-bold text-[#241A14] flex items-center gap-2">
             <Settings className="w-6 h-6 text-[#5C3A21]" />
-            Sairam Chahawala System Settings
+            The 7 Cafe System Settings
           </h2>
           <p className="text-xs text-[#8A7A6E]">
             Brand information, tax rates, voice speech preferences, and loyalty program rules.

@@ -223,6 +223,7 @@ export default function CustomerMenuPage() {
       {showMascotGreeting && (
         <ChaiMascotGreeting
           tableName={currentTable.name}
+          cafeName={settings.cafeName || 'The 7 Cafe'}
           onClose={() => setShowMascotGreeting(false)}
         />
       )}
@@ -235,7 +236,7 @@ export default function CustomerMenuPage() {
           </div>
           <div>
             <h1 className="font-extrabold text-sm text-[#241A14] tracking-tight flex items-center gap-1.5">
-              {settings.cafeName || 'Sairam Chahawala'}
+              {settings.cafeName || 'The 7 Cafe'}
             </h1>
             <p className="text-[10px] text-[#8A7A6E]">Digital Table Service</p>
           </div>
@@ -258,48 +259,30 @@ export default function CustomerMenuPage() {
           onClick={() => setShowMascotGreeting(true)}
           className="bg-gradient-to-r from-[#241A14] to-[#5C3A21] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden cursor-pointer group active:scale-[0.99] transition-transform"
         >
-          <div className="relative z-10 space-y-2 max-w-[65%] sm:max-w-md">
+          <div className="relative z-10 space-y-2 max-w-[62%] sm:max-w-md">
             <span className="px-2.5 py-0.5 rounded-full bg-[#E58A3A]/30 text-[#E58A3A] font-extrabold text-[10px] uppercase tracking-wider border border-[#E58A3A]/40 inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               📍 {currentTable.name} Scanned • Direct KOT
             </span>
             <h2 className="text-xl sm:text-2xl font-black">
-              Welcome to {settings.cafeName}
+              Welcome to {settings.cafeName || 'The 7 Cafe'}
             </h2>
             <p className="text-xs text-[#C8BAAA]">
               Order directly from your phone. Items are freshly handcrafted and sent straight to the barista & kitchen!
             </p>
           </div>
 
-          {/* Mini Animated Cartoon Chai-Babu in banner */}
-          <div className="absolute right-2 bottom-1 sm:right-6 sm:bottom-3 flex flex-col items-center select-none">
-            <div className="animate-mascot-bob transform group-hover:scale-110 transition-transform">
-              <svg viewBox="0 0 100 110" className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-lg" fill="none">
-                {/* Steams */}
-                <path d="M42 22 C39 14, 48 10, 44 4" stroke="#FFE0B2" strokeWidth="2.5" strokeLinecap="round" className="animate-steam-1" />
-                <path d="M52 20 C56 12, 48 6, 53 2" stroke="#FFE0B2" strokeWidth="2.5" strokeLinecap="round" className="animate-steam-2" />
-                {/* Cup */}
-                <path d="M30 35 L35 88 C36 91, 64 91, 65 88 L70 35 Z" fill="#D9822B" stroke="#FFE8D6" strokeWidth="2" />
-                <ellipse cx="50" cy="35" rx="20" ry="5" fill="#F4A261" />
-                <ellipse cx="50" cy="34" rx="18" ry="4" fill="#8C4A1F" />
-                {/* Eyes */}
-                <circle cx="43" cy="56" r="3.5" fill="#241A14" />
-                <circle cx="57" cy="56" r="3.5" fill="#241A14" />
-                <circle cx="44" cy="55" r="1.2" fill="#FFFFFF" />
-                <circle cx="58" cy="55" r="1.2" fill="#FFFFFF" />
-                {/* Smile */}
-                <path d="M45 64 Q50 72 55 64" stroke="#241A14" strokeWidth="2" fill="#DC2626" strokeLinecap="round" />
-                {/* Waving Hand */}
-                <g className="animate-mascot-wave origin-bottom-right">
-                  <path d="M68 58 Q80 48 84 42" stroke="#FFE8D6" strokeWidth="3" strokeLinecap="round" />
-                  <circle cx="84" cy="40" r="4.5" fill="#FFFFFF" />
-                </g>
-                {/* Stand */}
-                <ellipse cx="50" cy="92" rx="28" ry="6" fill="#BFA38C" />
-              </svg>
+          {/* Mini Cute Illustration in banner */}
+          <div className="absolute right-3 bottom-2 sm:right-6 sm:bottom-4 flex flex-col items-center select-none">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shadow-lg border-2 border-white/60 animate-float-gentle group-hover:scale-105 transition-transform bg-[#F5ECE0]">
+              <img
+                src="/images/welcome-mascot.jpg"
+                alt="The 7 Cafe"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="text-[9px] font-bold text-amber-200/90 bg-black/40 px-2 py-0.5 rounded-full border border-amber-300/30 -mt-1 shadow-xs">
-              👋 नमस्ते!
+            <span className="text-[9px] font-bold text-amber-200/95 bg-black/55 px-2 py-0.5 rounded-full border border-amber-300/30 -mt-2 z-10 shadow-xs flex items-center gap-1">
+              <span>☕</span> The 7 Cafe
             </span>
           </div>
 
