@@ -9,6 +9,12 @@ import {
   INITIAL_COUPONS
 } from '../data/initialData';
 import { announceNewOrder, testVoiceAnnouncement, playChimeSound } from '../utils/audio';
+import {
+  getSyncChannel,
+  publishOrderToCloud,
+  publishStatusChangeToCloud,
+  subscribeToCloudEvents
+} from '../services/cloudSync';
 
 const CafeContext = createContext(null);
 
@@ -100,7 +106,6 @@ export function CafeProvider({ children }) {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.ANNOUNCED_ORDERS);
       const set = new Set(saved ? JSON.parse(saved) : []);
-      // Also mark existing initial orders as already announced
       orders.forEach(o => set.add(o.id));
       announcedOrderIdsRef.current = set;
       localStorage.setItem(STORAGE_KEYS.ANNOUNCED_ORDERS, JSON.stringify([...set]));
@@ -108,6 +113,98 @@ export function CafeProvider({ children }) {
       // Ignore
     }
   }, []);
+
+  // REAL-TIME CLOUD & CROSS-TAB SYNC (Phone ➔ Laptop & Tab ➔ Tab)
+  useEffect(() => {
+    const channelName = getSyncChannel(settings);
+
+    // 1. BroadcastChannel for instant same-browser cross-tab sync
+    let broadcastChan = null;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      broadcastChan = new BroadcastChannel('sairam_live_sync_channel');
+      broadcastChan.onmessage = (event) => {
+        const data = event.data;
+        if (!data || !data.type) return;
+        if (data.type === 'NEW_ORDER' && data.order) {
+          handleIncomingOrder(data.order);
+        } else if (data.type === 'STATUS_CHANGED') {
+          handleIncomingStatus(data.orderId, data.newStatus, data.tableId);
+        }
+      };
+    }
+
+    // 2. Real-time Cloud Relay for Phone ➔ Laptop sync across devices & networks
+    const unsubscribeCloud = subscribeToCloudEvents(channelName, (data) => {
+      if (!data || !data.type) return;
+      if (data.type === 'NEW_ORDER' && data.order) {
+        handleIncomingOrder(data.order);
+      } else if (data.type === 'STATUS_CHANGED') {
+        handleIncomingStatus(data.orderId, data.newStatus, data.tableId);
+      }
+    });
+
+    return () => {
+      if (broadcastChan) broadcastChan.close();
+      if (unsubscribeCloud) unsubscribeCloud();
+    };
+  }, [settings.cloudSyncChannel, settings.voiceEnabled, settings.voiceRate, settings.voicePitch, settings.voiceVolume]);
+
+  // Handle incoming order from Mobile phone or another tab
+  const handleIncomingOrder = (order) => {
+    if (!order || !order.id) return;
+
+    setOrders(prev => {
+      if (prev.some(o => o.id === order.id)) return prev;
+      return [order, ...prev];
+    });
+
+    if (order.tableId) {
+      setTables(prev =>
+        prev.map(t =>
+          t.id === order.tableId || t.name === order.tableId
+            ? { ...t, status: 'Order Pending', activeOrderId: order.id }
+            : t
+        )
+      );
+    }
+
+    // Voice announcement if enabled & not yet announced
+    if (settings.voiceEnabled && !announcedOrderIdsRef.current.has(order.id)) {
+      announcedOrderIdsRef.current.add(order.id);
+      localStorage.setItem(
+        STORAGE_KEYS.ANNOUNCED_ORDERS,
+        JSON.stringify([...announcedOrderIdsRef.current])
+      );
+      const spokenText = announceNewOrder(order, {
+        rate: settings.voiceRate || 1.0,
+        pitch: settings.voicePitch || 1.0,
+        volume: settings.voiceVolume || 1.0
+      });
+      setLastVoiceAlert(spokenText);
+    } else {
+      playChimeSound();
+    }
+
+    addToast(`🔔 New KOT #${order.kotNumber || order.id} for ${order.tableName}!`, 'success', 5000);
+  };
+
+  // Handle incoming status change from Cloud
+  const handleIncomingStatus = (orderId, newStatus, tableId) => {
+    setOrders(prev =>
+      prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o))
+    );
+    if (tableId) {
+      if (newStatus === 'Completed' || newStatus === 'Available') {
+        setTables(prev =>
+          prev.map(t => (t.id === tableId || t.name === tableId ? { ...t, status: 'Available', activeOrderId: null } : t))
+        );
+      } else {
+        setTables(prev =>
+          prev.map(t => (t.id === tableId || t.name === tableId ? { ...t, status: newStatus, activeOrderId: orderId } : t))
+        );
+      }
+    }
+  };
 
   // Save to LocalStorage whenever state updates
   useEffect(() => {
@@ -301,7 +398,18 @@ export function CafeProvider({ children }) {
       playChimeSound();
     }
 
-    addToast(`New order #${orderId} placed for ${newOrder.tableName}!`, 'success');
+    // Broadcast to Cloud Relay (Phone ➔ Laptop) and local BroadcastChannel
+    const channelName = getSyncChannel(settings);
+    publishOrderToCloud(newOrder, channelName);
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        const bc = new BroadcastChannel('sairam_live_sync_channel');
+        bc.postMessage({ type: 'NEW_ORDER', order: newOrder });
+        bc.close();
+      } catch (e) {}
+    }
+
+    addToast(`New KOT #${kotNumber} placed for ${newOrder.tableName}!`, 'success');
     return newOrder;
   };
 
@@ -338,6 +446,17 @@ export function CafeProvider({ children }) {
         // Table resets to available when completed
         resetTable(affectedOrder.tableId);
       }
+    }
+
+    // Broadcast status change to Cloud and other open tabs
+    const channelName = getSyncChannel(settings);
+    publishStatusChangeToCloud(orderId, newStatus, affectedOrder?.tableId, channelName);
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        const bc = new BroadcastChannel('sairam_live_sync_channel');
+        bc.postMessage({ type: 'STATUS_CHANGED', orderId, newStatus, tableId: affectedOrder?.tableId });
+        bc.close();
+      } catch (e) {}
     }
   };
 
