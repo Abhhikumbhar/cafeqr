@@ -694,7 +694,7 @@ export default function PosPage() {
                   <QrCode className="w-24 h-24 text-[#241A14]" />
                 </div>
                 <p className="text-[10px] text-[#8A7A6E] mt-2 font-mono">
-                  UPI ID: sairamchahawala@okhdfcbank
+                  UPI ID: the7cafe@okhdfcbank
                 </p>
               </div>
             )}

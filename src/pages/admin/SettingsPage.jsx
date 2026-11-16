@@ -285,9 +285,9 @@ export default function SettingsPage() {
               <input
                 type="text"
                 name="cloudSyncChannel"
-                value={form.cloudSyncChannel || 'sairam_chahawala_kot_prod'}
+                value={form.cloudSyncChannel || 'the_7_cafe_kot_prod'}
                 onChange={handleChange}
-                placeholder="sairam_chahawala_kot_prod"
+                placeholder="the_7_cafe_kot_prod"
                 className="w-full text-xs font-mono py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
               />
             </div>
