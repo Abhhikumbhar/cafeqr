@@ -147,6 +147,40 @@ body {
   }
 }
 
+@keyframes gentle-shake {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  15% {
+    transform: rotate(-2.5deg) scale(1.02);
+  }
+  35% {
+    transform: rotate(2.5deg) scale(1.02);
+  }
+  55% {
+    transform: rotate(-1.5deg) scale(1.01);
+  }
+  75% {
+    transform: rotate(1.5deg) scale(1.01);
+  }
+}
+
+.animate-gentle-shake {
+  animation: gentle-shake 1.6s ease-in-out infinite;
+}
+
+.font-aesthetic-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-aesthetic-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-aesthetic-cursive {
+  font-family: 'Caveat', cursive;
+}
+
 @keyframes float-gentle {
   0%, 100% {
     transform: translateY(0px) scale(1);
