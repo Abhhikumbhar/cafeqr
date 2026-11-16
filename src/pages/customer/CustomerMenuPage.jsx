@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
+import ChaiMascotGreeting from '../../components/common/ChaiMascotGreeting';
 import {
   Coffee,
   Search,
@@ -56,6 +57,9 @@ export default function CustomerMenuPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [vegOnly, setVegOnly] = useState(false);
+
+  // Cartoon Mascot Welcome Animation
+  const [showMascotGreeting, setShowMascotGreeting] = useState(true);
 
   // Cart state
   const [cartItems, setCartItems] = useState([]);
@@ -215,6 +219,14 @@ export default function CustomerMenuPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F5F0] text-[#241A14] flex flex-col font-sans pb-28">
+      {/* Cartoon Mascot Welcome Greeting on QR Scan */}
+      {showMascotGreeting && (
+        <ChaiMascotGreeting
+          tableName={currentTable.name}
+          onClose={() => setShowMascotGreeting(false)}
+        />
+      )}
+
       {/* Mobile-Friendly Top Bar */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E8E0D5] px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-2.5">
@@ -230,7 +242,11 @@ export default function CustomerMenuPage() {
         </div>
 
         {/* Permanent Auto-Locked Table Badge */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5C3A21] text-white text-xs font-black shadow-md border border-[#E58A3A]/40">
+        <div 
+          onClick={() => setShowMascotGreeting(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5C3A21] text-white text-xs font-black shadow-md border border-[#E58A3A]/40 cursor-pointer active:scale-95 transition-transform"
+          title="Click to see greeting"
+        >
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>{currentTable.name} (Auto-Locked)</span>
         </div>
@@ -238,17 +254,53 @@ export default function CustomerMenuPage() {
 
       {/* Hero Welcome Banner */}
       <div className="p-4 sm:p-6 max-w-3xl mx-auto w-full">
-        <div className="bg-gradient-to-r from-[#241A14] to-[#5C3A21] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-          <div className="relative z-10 space-y-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#E58A3A]/30 text-[#E58A3A] font-extrabold text-[10px] uppercase tracking-wider border border-[#E58A3A]/40">
+        <div 
+          onClick={() => setShowMascotGreeting(true)}
+          className="bg-gradient-to-r from-[#241A14] to-[#5C3A21] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden cursor-pointer group active:scale-[0.99] transition-transform"
+        >
+          <div className="relative z-10 space-y-2 max-w-[65%] sm:max-w-md">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#E58A3A]/30 text-[#E58A3A] font-extrabold text-[10px] uppercase tracking-wider border border-[#E58A3A]/40 inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               📍 {currentTable.name} Scanned • Direct KOT
             </span>
             <h2 className="text-xl sm:text-2xl font-black">
               Welcome to {settings.cafeName}
             </h2>
-            <p className="text-xs text-[#C8BAAA] max-w-md">
+            <p className="text-xs text-[#C8BAAA]">
               Order directly from your phone. Items are freshly handcrafted and sent straight to the barista & kitchen!
             </p>
+          </div>
+
+          {/* Mini Animated Cartoon Chai-Babu in banner */}
+          <div className="absolute right-2 bottom-1 sm:right-6 sm:bottom-3 flex flex-col items-center select-none">
+            <div className="animate-mascot-bob transform group-hover:scale-110 transition-transform">
+              <svg viewBox="0 0 100 110" className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-lg" fill="none">
+                {/* Steams */}
+                <path d="M42 22 C39 14, 48 10, 44 4" stroke="#FFE0B2" strokeWidth="2.5" strokeLinecap="round" className="animate-steam-1" />
+                <path d="M52 20 C56 12, 48 6, 53 2" stroke="#FFE0B2" strokeWidth="2.5" strokeLinecap="round" className="animate-steam-2" />
+                {/* Cup */}
+                <path d="M30 35 L35 88 C36 91, 64 91, 65 88 L70 35 Z" fill="#D9822B" stroke="#FFE8D6" strokeWidth="2" />
+                <ellipse cx="50" cy="35" rx="20" ry="5" fill="#F4A261" />
+                <ellipse cx="50" cy="34" rx="18" ry="4" fill="#8C4A1F" />
+                {/* Eyes */}
+                <circle cx="43" cy="56" r="3.5" fill="#241A14" />
+                <circle cx="57" cy="56" r="3.5" fill="#241A14" />
+                <circle cx="44" cy="55" r="1.2" fill="#FFFFFF" />
+                <circle cx="58" cy="55" r="1.2" fill="#FFFFFF" />
+                {/* Smile */}
+                <path d="M45 64 Q50 72 55 64" stroke="#241A14" strokeWidth="2" fill="#DC2626" strokeLinecap="round" />
+                {/* Waving Hand */}
+                <g className="animate-mascot-wave origin-bottom-right">
+                  <path d="M68 58 Q80 48 84 42" stroke="#FFE8D6" strokeWidth="3" strokeLinecap="round" />
+                  <circle cx="84" cy="40" r="4.5" fill="#FFFFFF" />
+                </g>
+                {/* Stand */}
+                <ellipse cx="50" cy="92" rx="28" ry="6" fill="#BFA38C" />
+              </svg>
+            </div>
+            <span className="text-[9px] font-bold text-amber-200/90 bg-black/40 px-2 py-0.5 rounded-full border border-amber-300/30 -mt-1 shadow-xs">
+              👋 नमस्ते!
+            </span>
           </div>
 
           <div className="absolute right-[-20px] bottom-[-20px] w-44 h-44 rounded-full bg-white/5 pointer-events-none" />
