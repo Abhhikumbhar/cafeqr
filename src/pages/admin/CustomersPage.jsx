@@ -120,62 +120,72 @@ export default function CustomersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#E8E0D5]/70">
-              {filteredCustomers.map(cust => {
-                const visits = cust.totalVisits || 1;
-                const nextMilestone = visits < 3 ? '3rd Visit Perk' : visits < 5 ? '5th Visit: ₹50 OFF' : visits < 10 ? '10th Visit: Free Item' : 'VIP Tier Elite';
+              {filteredCustomers.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="py-12 text-center text-[#8A7A6E]">
+                    <Users className="w-10 h-10 mx-auto mb-2 opacity-30 text-[#5C3A21]" />
+                    <p className="font-bold text-sm text-[#241A14]">No customer profiles yet</p>
+                    <p className="text-xs text-[#8A7A6E] mt-0.5">Customers will be automatically enrolled when orders are completed with their phone numbers.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredCustomers.map(cust => {
+                  const visits = cust.totalVisits || 1;
+                  const nextMilestone = visits < 3 ? '3rd Visit Perk' : visits < 5 ? '5th Visit: ₹50 OFF' : visits < 10 ? '10th Visit: Free Item' : 'VIP Tier Elite';
 
-                return (
-                  <tr key={cust.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                    <td className="py-3.5 pl-5">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-[#5C3A21]/10 text-[#5C3A21] font-bold text-xs flex items-center justify-center">
-                          {cust.name.charAt(0)}
+                  return (
+                    <tr key={cust.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                      <td className="py-3.5 pl-5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-[#5C3A21]/10 text-[#5C3A21] font-bold text-xs flex items-center justify-center">
+                            {cust.name.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-[#241A14]">{cust.name}</p>
+                            <p className="text-[10px] text-[#8A7A6E]">Since {cust.memberSince}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold text-[#241A14]">{cust.name}</p>
-                          <p className="text-[10px] text-[#8A7A6E]">Since {cust.memberSince}</p>
+                      </td>
+                      <td className="py-3.5 font-mono text-[#5C3A21]">
+                        +91 {cust.phone}
+                      </td>
+                      <td className="py-3.5">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-50 text-amber-900 border border-amber-200">
+                          <Award className="w-3 h-3 text-[#E58A3A]" />
+                          {visits} Visits
+                        </span>
+                      </td>
+                      <td className="py-3.5 font-bold text-[#241A14]">
+                        {formatCurrency(cust.totalSpent)}
+                      </td>
+                      <td className="py-3.5 font-bold text-[#5C3A21]">
+                        {cust.loyaltyPoints} pts
+                      </td>
+                      <td className="py-3.5 text-[#E58A3A] font-semibold">
+                        {nextMilestone}
+                      </td>
+                      <td className="py-3.5 pr-5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleSendBirthdayOffer(cust)}
+                            className="p-1.5 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors"
+                            title="Grant Birthday Offer (₹100 OFF)"
+                          >
+                            <Gift className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setSelectedCustomer(cust)}
+                            className="p-1.5 text-[#5C3A21] hover:bg-[#E8E0D5] rounded-lg transition-colors"
+                            title="View Profile & Orders"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="py-3.5 font-mono text-[#5C3A21]">
-                      +91 {cust.phone}
-                    </td>
-                    <td className="py-3.5">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-50 text-amber-900 border border-amber-200">
-                        <Award className="w-3 h-3 text-[#E58A3A]" />
-                        {visits} Visits
-                      </span>
-                    </td>
-                    <td className="py-3.5 font-bold text-[#241A14]">
-                      {formatCurrency(cust.totalSpent)}
-                    </td>
-                    <td className="py-3.5 font-bold text-[#5C3A21]">
-                      {cust.loyaltyPoints} pts
-                    </td>
-                    <td className="py-3.5 text-[#E58A3A] font-semibold">
-                      {nextMilestone}
-                    </td>
-                    <td className="py-3.5 pr-5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleSendBirthdayOffer(cust)}
-                          className="p-1.5 text-pink-600 hover:bg-pink-50 rounded-lg transition-colors"
-                          title="Grant Birthday Offer (₹100 OFF)"
-                        >
-                          <Gift className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setSelectedCustomer(cust)}
-                          className="p-1.5 text-[#5C3A21] hover:bg-[#E8E0D5] rounded-lg transition-colors"
-                          title="View Profile & Orders"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>

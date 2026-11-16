@@ -44,17 +44,21 @@ export default function ReportsPage() {
       .slice(0, 5);
   }, [orders]);
 
-  // Hourly order density (mock-to-actual distribution)
-  const hourlyData = [
-    { hour: '09 AM', orders: 4, revenue: 1200 },
-    { hour: '11 AM', orders: 9, revenue: 2900 },
-    { hour: '01 PM', orders: 15, revenue: 5400 },
-    { hour: '03 PM', orders: 8, revenue: 2400 },
-    { hour: '05 PM', orders: 14, revenue: 4800 },
-    { hour: '07 PM', orders: 18, revenue: 6200 },
-    { hour: '09 PM', orders: 11, revenue: 3600 }
-  ];
-  const maxHourlyRevenue = Math.max(...hourlyData.map(h => h.revenue));
+  // Hourly order density calculated dynamically from real orders
+  const hourlyData = React.useMemo(() => {
+    const hours = ['09 AM', '11 AM', '01 PM', '03 PM', '05 PM', '07 PM', '09 PM'];
+    const hourRanges = [9, 11, 13, 15, 17, 19, 21];
+    return hours.map((h, i) => {
+      const targetHour = hourRanges[i];
+      const matchedOrders = orders.filter(o => {
+        const d = new Date(o.createdAt);
+        return d.getHours() >= targetHour && d.getHours() < targetHour + 2;
+      });
+      const revenue = matchedOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+      return { hour: h, orders: matchedOrders.length, revenue };
+    });
+  }, [orders]);
+  const maxHourlyRevenue = Math.max(...hourlyData.map(h => h.revenue), 100);
 
   return (
     <div className="space-y-6">

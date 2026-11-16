@@ -153,7 +153,7 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
           </div>
 
           <div className="mt-3 flex items-center justify-between text-[11px] text-[#8A7A6E] px-1">
-            <span>Demo Mode Active</span>
+            <span>Sairam Chahawala</span>
             <span className="flex items-center gap-1 text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               100% Offline/Sync

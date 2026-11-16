@@ -47,17 +47,23 @@ export default function DashboardPage() {
       .slice(0, 5);
   }, [orders, menuItems]);
 
-  // Weekly Revenue mock-to-live data points for chart
-  const weeklyData = [
-    { day: 'Mon', revenue: 4200 },
-    { day: 'Tue', revenue: 5800 },
-    { day: 'Wed', revenue: 6400 },
-    { day: 'Thu', revenue: 5100 },
-    { day: 'Fri', revenue: 8900 },
-    { day: 'Sat', revenue: 11200 },
-    { day: 'Today', revenue: Math.max(stats.todaysRevenue, 3800) }
-  ];
-  const maxWeeklyRevenue = Math.max(...weeklyData.map(d => d.revenue), 12000);
+  // Weekly Revenue derived dynamically from actual completed orders
+  const weeklyData = React.useMemo(() => {
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const result = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dayLabel = i === 0 ? 'Today' : dayNames[d.getDay()];
+      const dateStr = d.toDateString();
+      const revenue = orders
+        .filter(o => o.status === 'Completed' && new Date(o.completedAt || o.createdAt).toDateString() === dateStr)
+        .reduce((sum, o) => sum + (o.total || 0), 0);
+      result.push({ day: dayLabel, revenue });
+    }
+    return result;
+  }, [orders]);
+  const maxWeeklyRevenue = Math.max(...weeklyData.map(d => d.revenue), 1000);
 
   return (
     <div className="space-y-6">
@@ -69,7 +75,7 @@ export default function DashboardPage() {
               <Sparkles className="w-3.5 h-3.5" />
               Real-time Operations
             </span>
-            <span className="text-xs text-[#C8BAAA]">Demo Mode Active</span>
+            <span className="text-xs text-[#C8BAAA]">Live System</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             {settings.cafeName || 'Sairam Chahawala'}
@@ -335,50 +341,60 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8E0D5]/60">
-                {recentOrders.map(order => {
-                  const statusStyle = STATUS_COLORS[order.status] || STATUS_COLORS.Available;
-                  const totalItemsCount = order.items.reduce((s, i) => s + (i.quantity || 1), 0);
+                {recentOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="py-8 text-center text-[#8A7A6E]">
+                      <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30 text-[#5C3A21]" />
+                      <p className="font-bold text-xs text-[#241A14]">No active orders placed yet</p>
+                      <p className="text-[10px] mt-0.5">Orders from table QR scans and POS terminal will appear here live.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  recentOrders.map(order => {
+                    const statusStyle = STATUS_COLORS[order.status] || STATUS_COLORS.Available;
+                    const totalItemsCount = order.items.reduce((s, i) => s + (i.quantity || 1), 0);
 
-                  return (
-                    <tr key={order.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
-                      <td className="py-3 pl-2 font-mono font-bold text-[#5C3A21]">
-                        {order.id}
-                      </td>
-                      <td className="py-3 font-semibold text-[#241A14]">
-                        {order.tableName}
-                      </td>
-                      <td className="py-3 text-[#665A4F]">
-                        {order.customerName}
-                      </td>
-                      <td className="py-3 text-[#665A4F]">
-                        <span className="font-medium text-[#241A14]">{totalItemsCount} items</span>
-                        <p className="text-[10px] text-[#8A7A6E] truncate max-w-[150px]">
-                          {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
-                        </p>
-                      </td>
-                      <td className="py-3 font-bold text-[#241A14]">
-                        {formatCurrency(order.total)}
-                      </td>
-                      <td className="py-3">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
-                        >
-                          <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-3 pr-2 text-right">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="p-1.5 text-[#5C3A21] hover:bg-[#E8E0D5] rounded-lg transition-colors"
-                          title="View Order Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                    return (
+                      <tr key={order.id} className="hover:bg-[#FAF7F2]/60 transition-colors">
+                        <td className="py-3 pl-2 font-mono font-bold text-[#5C3A21]">
+                          {order.id}
+                        </td>
+                        <td className="py-3 font-semibold text-[#241A14]">
+                          {order.tableName}
+                        </td>
+                        <td className="py-3 text-[#665A4F]">
+                          {order.customerName}
+                        </td>
+                        <td className="py-3 text-[#665A4F]">
+                          <span className="font-medium text-[#241A14]">{totalItemsCount} items</span>
+                          <p className="text-[10px] text-[#8A7A6E] truncate max-w-[150px]">
+                            {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                          </p>
+                        </td>
+                        <td className="py-3 font-bold text-[#241A14]">
+                          {formatCurrency(order.total)}
+                        </td>
+                        <td className="py-3">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="py-3 pr-2 text-right">
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="p-1.5 text-[#5C3A21] hover:bg-[#E8E0D5] rounded-lg transition-colors"
+                            title="View Order Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

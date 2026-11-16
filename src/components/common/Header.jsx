@@ -116,15 +116,15 @@ export default function Header({ toggleMobileSidebar }) {
           <span>New Order (POS)</span>
         </Link>
 
-        {/* Demo Mode Badge / Reset button */}
+        {/* Reset / Clear Data button */}
         <button
           onClick={() => {
-            if (window.confirm('Reset all demo orders, tables, and customers to starting state?')) {
+            if (window.confirm('Clear all orders, tables, and customers to starting state?')) {
               resetDemoData();
             }
           }}
           className="p-2 text-[#8A7A6E] hover:text-[#5C3A21] hover:bg-white rounded-xl border border-transparent hover:border-[#E8E0D5] transition-all"
-          title="Reset Demo Data (Pristine Starting State)"
+          title="Reset System Data (Clean Starting State)"
         >
           <RotateCcw className="w-4 h-4" />
         </button>

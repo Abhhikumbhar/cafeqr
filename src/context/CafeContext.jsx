@@ -13,13 +13,13 @@ import { announceNewOrder, testVoiceAnnouncement, playChimeSound } from '../util
 const CafeContext = createContext(null);
 
 const STORAGE_KEYS = {
-  SETTINGS: 'cafeflow_settings_v1',
-  TABLES: 'cafeflow_tables_v1',
-  MENU: 'cafeflow_menu_v1',
-  CUSTOMERS: 'cafeflow_customers_v1',
-  ORDERS: 'cafeflow_orders_v1',
-  COUPONS: 'cafeflow_coupons_v1',
-  ANNOUNCED_ORDERS: 'cafeflow_announced_orders_v1'
+  SETTINGS: 'sairam_v3_clean_settings',
+  TABLES: 'sairam_v3_clean_tables',
+  MENU: 'sairam_v3_clean_menu',
+  CUSTOMERS: 'sairam_v3_clean_customers',
+  ORDERS: 'sairam_v3_clean_orders',
+  COUPONS: 'sairam_v3_clean_coupons',
+  ANNOUNCED_ORDERS: 'sairam_v3_clean_announced_orders'
 };
 
 export function CafeProvider({ children }) {
@@ -505,7 +505,7 @@ export function CafeProvider({ children }) {
     }
 
     addToast(
-      `Payment of ₹${completedOrder.total} completed via ${paymentMethod} (Demo Mode)`,
+      `Payment of ₹${completedOrder.total} completed via ${paymentMethod}`,
       'success'
     );
 
@@ -652,7 +652,7 @@ export function CafeProvider({ children }) {
       JSON.stringify([...announcedOrderIdsRef.current])
     );
 
-    addToast('Demo data restored to initial pristine state', 'success');
+    addToast('All data cleared and reset to fresh initial state', 'success');
   };
 
   // Aggregated live statistics for dashboard & reports

@@ -647,7 +647,7 @@ export default function PosPage() {
 
             <div className="text-center mb-5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#E58A3A] bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-                Demo Settlement
+                Bill Payment
               </span>
               <h3 className="text-xl font-extrabold text-[#241A14] mt-2">
                 Pay {formatCurrency(finalTotal)}
@@ -688,7 +688,7 @@ export default function PosPage() {
             {selectedPaymentMethod === 'UPI' && (
               <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#E8E0D5] text-center mb-5">
                 <p className="text-xs font-semibold text-[#241A14] mb-2">
-                  Scan Cafe UPI Dynamic QR (Demo Simulation)
+                  Scan Cafe UPI Dynamic QR
                 </p>
                 <div className="w-32 h-32 mx-auto bg-white p-2 rounded-xl border border-[#E8E0D5] flex items-center justify-center">
                   <QrCode className="w-24 h-24 text-[#241A14]" />
@@ -711,7 +711,7 @@ export default function PosPage() {
               className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
-              <span>Confirm Demo Payment ({selectedPaymentMethod})</span>
+              <span>Confirm Payment ({selectedPaymentMethod})</span>
             </button>
           </div>
         </div>
@@ -779,7 +779,7 @@ export default function PosPage() {
                 </div>
                 <div className="flex justify-between text-[10px] text-[#8A7A6E]">
                   <span>Paid via:</span>
-                  <span>{lastCompletedOrder.paymentMethod} (Demo)</span>
+                  <span>{lastCompletedOrder.paymentMethod}</span>
                 </div>
               </div>
 

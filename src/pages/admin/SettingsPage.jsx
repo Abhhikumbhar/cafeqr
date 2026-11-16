@@ -261,28 +261,28 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Demo Data Management */}
+        {/* System Data Reset */}
         <div className="bg-[#FAF7F2] rounded-3xl p-6 border border-[#E8E0D5] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h4 className="font-extrabold text-sm text-[#241A14]">
-              Demo Mode & Persistent Storage
+              Data Storage & Reset
             </h4>
             <p className="text-xs text-[#8A7A6E] mt-0.5">
-              Reset demo orders, 12 tables, customer visits, and menu items to initial pristine showcase data.
+              Clear all orders, table tickets, and customer records to start fresh.
             </p>
           </div>
 
           <button
             type="button"
             onClick={() => {
-              if (window.confirm('Reset all demo state to fresh presentation data?')) {
+              if (window.confirm('Are you sure you want to clear all orders and reset tables to fresh starting state?')) {
                 resetDemoData();
               }
             }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-[#E8E0D5] text-[#5C3A21] hover:bg-gray-50 text-xs font-bold shadow-sm transition-all"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Reset Demo Data</span>
+            <span>Clear / Reset Data</span>
           </button>
         </div>
       </form>
