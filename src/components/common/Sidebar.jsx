@@ -28,7 +28,7 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
       to: '/admin/tables',
       label: 'Tables',
       icon: Grid3X3,
-      badge: `${stats.activeTablesCount}/${settings.tableCount || 12}`
+      badge: `${stats.activeTablesCount}/${settings.tableCount || 10}`
     },
     {
       to: '/admin/kitchen',

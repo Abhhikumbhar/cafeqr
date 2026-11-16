@@ -42,7 +42,7 @@ export default function Header({ toggleMobileSidebar }) {
           </span>
           <span className="text-xs text-[#8A7A6E]">|</span>
           <span className="text-xs text-[#665A4F] font-medium">
-            {stats.activeTablesCount} / {settings.tableCount || 12} Tables Active
+            {stats.activeTablesCount} / {settings.tableCount || 10} Tables Active
           </span>
         </div>
       </div>

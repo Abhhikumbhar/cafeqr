@@ -7,7 +7,7 @@ export const INITIAL_SETTINGS = {
   email: "contact@sairamchahawala.com",
   gstNumber: "27AAAAA0000A1Z5",
   gstPercentage: 5,
-  tableCount: 12,
+  tableCount: 10,
   currency: "₹",
   voiceEnabled: true,
   voiceVolume: 1.0,
@@ -17,9 +17,10 @@ export const INITIAL_SETTINGS = {
   fifthVisitDiscount: 30,
   adminPin: "1234",
   demoMode: false,
+  qrBaseUrl: "", // Optional live domain for printing permanent QR codes
 };
 
-// 12 Tables - all clean & available for real guests
+// Exactly 10 Permanent Tables for Sairam Chahawala
 export const INITIAL_TABLES = [
   { id: "T-01", number: 1, name: "Table 01", capacity: 2, status: "Available", activeOrderId: null, qrCodeData: "Table-01" },
   { id: "T-02", number: 2, name: "Table 02", capacity: 4, status: "Available", activeOrderId: null, qrCodeData: "Table-02" },
@@ -30,9 +31,7 @@ export const INITIAL_TABLES = [
   { id: "T-07", number: 7, name: "Table 07", capacity: 4, status: "Available", activeOrderId: null, qrCodeData: "Table-07" },
   { id: "T-08", number: 8, name: "Table 08", capacity: 2, status: "Available", activeOrderId: null, qrCodeData: "Table-08" },
   { id: "T-09", number: 9, name: "Table 09", capacity: 6, status: "Available", activeOrderId: null, qrCodeData: "Table-09" },
-  { id: "T-10", number: 10, name: "Table 10", capacity: 4, status: "Available", activeOrderId: null, qrCodeData: "Table-10" },
-  { id: "T-11", number: 11, name: "Table 11", capacity: 2, status: "Available", activeOrderId: null, qrCodeData: "Table-11" },
-  { id: "T-12", number: 12, name: "Table 12", capacity: 8, status: "Available", activeOrderId: null, qrCodeData: "Table-12" },
+  { id: "T-10", number: 10, name: "Table 10", capacity: 4, status: "Available", activeOrderId: null, qrCodeData: "Table-10" }
 ];
 
 export const CATEGORIES = [

@@ -13,13 +13,13 @@ import { announceNewOrder, testVoiceAnnouncement, playChimeSound } from '../util
 const CafeContext = createContext(null);
 
 const STORAGE_KEYS = {
-  SETTINGS: 'sairam_v3_clean_settings',
-  TABLES: 'sairam_v3_clean_tables',
-  MENU: 'sairam_v3_clean_menu',
-  CUSTOMERS: 'sairam_v3_clean_customers',
-  ORDERS: 'sairam_v3_clean_orders',
-  COUPONS: 'sairam_v3_clean_coupons',
-  ANNOUNCED_ORDERS: 'sairam_v3_clean_announced_orders'
+  SETTINGS: 'sairam_v4_settings',
+  TABLES: 'sairam_v4_tables',
+  MENU: 'sairam_v4_menu',
+  CUSTOMERS: 'sairam_v4_customers',
+  ORDERS: 'sairam_v4_orders',
+  COUPONS: 'sairam_v4_coupons',
+  ANNOUNCED_ORDERS: 'sairam_v4_announced_orders'
 };
 
 export function CafeProvider({ children }) {
@@ -253,8 +253,11 @@ export function CafeProvider({ children }) {
     const discount = orderData.discount || 0;
     const total = Math.max(0, subtotal + gst - discount);
 
+    const kotNumber = `KOT-${String(orders.length + 101)}`;
+
     const newOrder = {
       id: orderId,
+      kotNumber,
       tableId: orderData.tableId,
       tableNumber: orderData.tableNumber || 1,
       tableName: orderData.tableName || `Table ${String(orderData.tableNumber || 1).padStart(2, '0')}`,
@@ -270,7 +273,7 @@ export function CafeProvider({ children }) {
       paymentMethod: orderData.paymentMethod || 'Pending',
       paymentStatus: 'Pending',
       createdAt: new Date().toISOString(),
-      isDemo: true
+      isDemo: false
     };
 
     // Update order list

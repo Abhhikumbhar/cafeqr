@@ -14,18 +14,22 @@ import {
   CheckCircle2,
   AlertCircle,
   Coffee,
-  Sparkles
+  Sparkles,
+  Link2,
+  Check
 } from 'lucide-react';
 
 export default function TablesPage() {
-  const { tables, orders, updateTableStatus, resetTable, addTable, editTable, settings } = useCafe();
+  const { tables, orders, updateTableStatus, resetTable, addTable, editTable, settings, setSettings, addToast } = useCafe();
   const [filterStatus, setFilterStatus] = useState('All');
   const [selectedTableForQR, setSelectedTableForQR] = useState(null);
+  const [showPrintAllModal, setShowPrintAllModal] = useState(false);
   const [selectedTableForOrder, setSelectedTableForOrder] = useState(null);
   const [showAddTableModal, setShowAddTableModal] = useState(false);
   const [newTableCapacity, setNewTableCapacity] = useState(4);
+  const [customQrDomain, setCustomQrDomain] = useState(settings.qrBaseUrl || '');
 
-  // Status categories
+  // 10 Tables status categories
   const statuses = [
     'All',
     'Available',
@@ -47,10 +51,17 @@ export default function TablesPage() {
     return orders.find(o => o.id === table.activeOrderId && o.status !== 'Completed');
   };
 
-  // Helper to get QR link URL
+  // Helper to get permanent QR link URL for a table
   const getTableQRUrl = (tableName) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
-    return `${origin}/menu?table=${encodeURIComponent(tableName)}`;
+    // If a custom production domain is saved, use it; otherwise use current origin
+    const base = customQrDomain.trim() || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173');
+    const cleanBase = base.replace(/\/+$/, '');
+    return `${cleanBase}/menu?table=${encodeURIComponent(tableName)}`;
+  };
+
+  const handleSaveDomain = () => {
+    setSettings(prev => ({ ...prev, qrBaseUrl: customQrDomain.trim() }));
+    addToast('Live QR Domain saved! QR codes will now use this permanent URL.', 'success');
   };
 
   return (
@@ -58,19 +69,34 @@ export default function TablesPage() {
       {/* Header and Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#241A14] flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">
+              Permanent QR System
+            </span>
+            <span className="text-xs text-[#8A7A6E]">10 Cafe Tables</span>
+          </div>
+          <h2 className="text-2xl font-black text-[#241A14] flex items-center gap-2">
             <Grid3X3 className="w-6 h-6 text-[#5C3A21]" />
-            Table Management (12 Tables)
+            Table Management (१० टेबल्स)
           </h2>
-          <p className="text-xs text-[#8A7A6E] mt-0.5">
-            Monitor real-time table occupancy, generate guest QR codes, and manage table states.
+          <p className="text-xs text-[#8A7A6E]">
+            एकदाच प्रिंट मारून टेबलवर ठेवा. स्कॅन करताच टेबल नंबर ऑटो-डिटेक्ट होऊन थेट KOT किचनमध्ये जाईल.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Top Actions: Print All 10 QRs + Add Table */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => setShowPrintAllModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#E58A3A] hover:bg-[#D77A28] text-white text-xs font-black shadow-md shadow-[#E58A3A]/25 transition-all"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print All 10 Tables Sheet (सर्व १० QRs एकत्र प्रिंट)</span>
+          </button>
+
           <button
             onClick={() => setShowAddTableModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-semibold shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-[#E8E0D5] hover:bg-[#FAF7F2] text-[#5C3A21] text-xs font-bold transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Add Table</span>
@@ -78,8 +104,39 @@ export default function TablesPage() {
         </div>
       </div>
 
+      {/* Permanent Live Domain Configuration Card */}
+      <div className="bg-[#FAF7F2] p-4 rounded-3xl border border-[#E8E0D5] flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <Link2 className="w-5 h-5 text-[#E58A3A] shrink-0" />
+          <div>
+            <h4 className="text-xs font-extrabold text-[#241A14]">
+              Permanent Table QR Website URL (लाईव्ह डोमेन)
+            </h4>
+            <p className="text-[11px] text-[#8A7A6E]">
+              प्रिंट मारताना QR कोडमध्ये ही लिंक कायमस्वरूपी राहील. ग्राहकाने स्कॅन केल्यावर थेट हा मेनू उघडेल.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <input
+            type="url"
+            value={customQrDomain}
+            onChange={(e) => setCustomQrDomain(e.target.value)}
+            placeholder={typeof window !== 'undefined' ? window.location.origin : 'https://cafeqr.vercel.app'}
+            className="text-xs font-mono py-2 px-3 rounded-xl bg-white border border-[#E8E0D5] text-[#241A14] flex-1 md:w-64"
+          />
+          <button
+            onClick={handleSaveDomain}
+            className="px-3.5 py-2 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-bold shrink-0 transition-colors"
+          >
+            Save URL
+          </button>
+        </div>
+      </div>
+
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {statuses.map(st => {
           const count = st === 'All' ? tables.length : tables.filter(t => t.status === st).length;
           const isActive = filterStatus === st;
@@ -88,7 +145,7 @@ export default function TablesPage() {
             <button
               key={st}
               onClick={() => setFilterStatus(st)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 isActive
                   ? 'bg-[#5C3A21] text-white border-[#5C3A21] shadow-sm'
                   : 'bg-white text-[#665A4F] border-[#E8E0D5] hover:bg-[#FAF7F2]'
@@ -100,8 +157,8 @@ export default function TablesPage() {
         })}
       </div>
 
-      {/* Tables 12-Card Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+      {/* 10 Tables Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {filteredTables.map(table => {
           const activeOrder = getActiveOrder(table);
           const statusStyle = STATUS_COLORS[table.status] || STATUS_COLORS.Available;
@@ -111,105 +168,94 @@ export default function TablesPage() {
           return (
             <div
               key={table.id}
-              className={`bg-white rounded-3xl p-5 border transition-all hover:shadow-md flex flex-col justify-between ${
+              className={`bg-white rounded-3xl p-4 border transition-all hover:shadow-md flex flex-col justify-between ${
                 isOccupied ? 'border-[#5C3A21]/30 shadow-sm' : 'border-[#E8E0D5]'
               }`}
             >
               <div>
                 {/* Table Header: Name + Capacity + Status Pill */}
-                <div className="flex items-start justify-between mb-3">
+                <div className="flex items-start justify-between mb-2">
                   <div>
-                    <h3 className="text-xl font-extrabold text-[#241A14]">
+                    <h3 className="text-lg font-black text-[#241A14]">
                       {table.name}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-xs text-[#8A7A6E] mt-0.5">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{table.capacity} Guests</span>
+                    <div className="flex items-center gap-1 text-[11px] text-[#8A7A6E]">
+                      <Users className="w-3 h-3" />
+                      <span>{table.capacity} Seater</span>
                     </div>
                   </div>
 
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot}`} />
                     {table.status}
                   </span>
                 </div>
 
+                {/* Table QR Thumbnail */}
+                <div
+                  onClick={() => setSelectedTableForQR(table)}
+                  className="bg-[#FAF7F2] p-2.5 rounded-2xl border border-[#E8E0D5] text-center my-3 cursor-pointer hover:bg-white transition-colors group"
+                >
+                  <div className="bg-white p-2 rounded-xl inline-block border border-[#E8E0D5] shadow-xs group-hover:scale-105 transition-transform">
+                    <QRCodeSVG
+                      value={qrUrl}
+                      size={95}
+                      level="M"
+                      includeMargin={false}
+                      bgColor="#FFFFFF"
+                      fgColor="#241A14"
+                    />
+                  </div>
+                  <p className="text-[10px] font-extrabold text-[#5C3A21] mt-1.5 flex items-center justify-center gap-1">
+                    <QrCode className="w-3 h-3 text-[#E58A3A]" />
+                    <span>Permanent QR Code</span>
+                  </p>
+                </div>
+
                 {/* Active Order Card info or Available State */}
                 {activeOrder ? (
-                  <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#E8E0D5] mb-4 space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
+                  <div className="bg-amber-50/70 p-2.5 rounded-xl border border-amber-200 mb-3 space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
                       <span className="font-mono font-bold text-[#5C3A21]">
-                        #{activeOrder.id}
+                        {activeOrder.kotNumber || activeOrder.id}
                       </span>
-                      <span className="font-bold text-[#241A14]">
+                      <span className="font-extrabold text-[#241A14]">
                         {formatCurrency(activeOrder.total)}
                       </span>
                     </div>
-                    <p className="text-xs text-[#665A4F] font-medium truncate">
-                      {activeOrder.customerName || 'Guest'}
-                    </p>
-                    <p className="text-[11px] text-[#8A7A6E] truncate">
+                    <p className="text-[11px] text-[#665A4F] truncate font-medium">
                       {activeOrder.items?.map(i => `${i.quantity}x ${i.name}`).join(', ')}
                     </p>
                   </div>
                 ) : (
-                  <div className="bg-emerald-50/50 border border-emerald-100 p-3 rounded-2xl text-center mb-4">
-                    <p className="text-xs font-semibold text-emerald-800">
-                      Table is ready for guests
-                    </p>
-                    <p className="text-[11px] text-emerald-600/80">
-                      Walk-in or QR self-order
+                  <div className="bg-emerald-50/50 border border-emerald-100 p-2 rounded-xl text-center mb-3">
+                    <p className="text-[11px] font-semibold text-emerald-800">
+                      Table Ready for Guests
                     </p>
                   </div>
                 )}
-
-                {/* Status Dropdown Controller */}
-                <div className="space-y-1 mb-4">
-                  <label className="text-[10px] font-bold uppercase text-[#8A7A6E] tracking-wider block">
-                    Change Status
-                  </label>
-                  <select
-                    value={table.status}
-                    onChange={(e) => updateTableStatus(table.id, e.target.value)}
-                    className="w-full text-xs font-semibold py-2 px-3 rounded-xl bg-[#F8F5F0] border border-[#E8E0D5] text-[#241A14] focus:outline-none focus:ring-2 focus:ring-[#5C3A21]"
-                  >
-                    {statuses.filter(s => s !== 'All').map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
-              {/* Action Buttons: QR Code, Reset, View Order */}
-              <div className="pt-3 border-t border-[#E8E0D5]/70 flex items-center justify-between gap-1.5">
+              {/* Action Buttons: Print QR, Reset Table */}
+              <div className="pt-2.5 border-t border-[#E8E0D5]/70 flex items-center justify-between gap-1.5">
                 <button
                   onClick={() => setSelectedTableForQR(table)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#5C3A21] border border-[#E8E0D5] text-xs font-semibold transition-colors"
-                  title="Generate & Print Table QR Code"
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#5C3A21] border border-[#E8E0D5] text-[11px] font-bold transition-colors"
+                  title="Print Permanent Standee"
                 >
-                  <QrCode className="w-3.5 h-3.5 text-[#E58A3A]" />
-                  <span>QR Code</span>
+                  <Printer className="w-3 h-3 text-[#E58A3A]" />
+                  <span>Print QR</span>
                 </button>
-
-                {activeOrder ? (
-                  <button
-                    onClick={() => setSelectedTableForOrder(activeOrder)}
-                    className="p-2 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#5C3A21] border border-[#E8E0D5] transition-colors"
-                    title="View Active Order"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </button>
-                ) : null}
 
                 {table.status !== 'Available' && (
                   <button
                     onClick={() => resetTable(table.id)}
-                    className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-[#5C3A21] border border-amber-200 transition-colors"
-                    title="Reset Table to Available"
+                    className="p-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-[#5C3A21] border border-amber-200 transition-colors"
+                    title="Reset to Available"
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <RotateCcw className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -218,34 +264,34 @@ export default function TablesPage() {
         })}
       </div>
 
-      {/* QR Code Modal with Live Preview and Print functionality */}
+      {/* SINGLE TABLE QR MODAL */}
       {selectedTableForQR && (
         <div className="fixed inset-0 z-50 bg-[#241A14]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E8E0D5] relative text-center">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E8E0D5] relative text-center">
             <button
               onClick={() => setSelectedTableForQR(null)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F8F5F0] text-[#665A4F] hover:text-[#241A14] flex items-center justify-center text-sm font-bold"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#F8F5F0] text-[#665A4F] hover:text-[#241A14] flex items-center justify-center text-sm font-bold"
             >
               ✕
             </button>
 
-            {/* Printable Table QR Stand Card */}
-            <div className="printable-area p-6 bg-gradient-to-b from-[#FAF7F2] to-white rounded-3xl border border-[#E8E0D5] shadow-inner mb-5">
-              <div className="flex items-center justify-center gap-2 mb-2">
+            {/* Printable Single Table QR Stand Card */}
+            <div className="printable-area p-6 bg-gradient-to-b from-[#FAF7F2] to-white rounded-3xl border border-[#E8E0D5] shadow-inner mb-4">
+              <div className="flex items-center justify-center gap-2 mb-1">
                 <Coffee className="w-5 h-5 text-[#E58A3A]" />
-                <span className="font-extrabold text-base tracking-tight text-[#241A14]">
+                <span className="font-extrabold text-lg tracking-tight text-[#241A14]">
                   {settings.cafeName || 'Sairam Chahawala'}
                 </span>
               </div>
-              <p className="text-[11px] text-[#8A7A6E] mb-4">
-                Scan to browse digital menu & order directly
+              <p className="text-[11px] text-[#8A7A6E] mb-3">
+                Scan to browse menu & order directly
               </p>
 
               {/* The SVG QR Code */}
-              <div className="bg-white p-4 rounded-2xl border border-[#E8E0D5] inline-block shadow-sm">
+              <div className="bg-white p-3.5 rounded-2xl border border-[#E8E0D5] inline-block shadow-sm">
                 <QRCodeSVG
                   value={getTableQRUrl(selectedTableForQR.name)}
-                  size={190}
+                  size={180}
                   level="H"
                   includeMargin={true}
                   bgColor="#FFFFFF"
@@ -253,31 +299,34 @@ export default function TablesPage() {
                 />
               </div>
 
-              <div className="mt-4">
-                <div className="inline-block px-4 py-1.5 rounded-full bg-[#5C3A21] text-white font-extrabold text-sm tracking-wide">
+              <div className="mt-3">
+                <div className="inline-block px-5 py-1.5 rounded-full bg-[#5C3A21] text-white font-black text-base tracking-wide">
                   {selectedTableForQR.name}
                 </div>
-                <p className="text-[10px] text-[#8A7A6E] mt-2">
-                  No app download needed • Instant browser menu
+                <p className="text-[10px] font-bold text-[#E58A3A] mt-2">
+                  Direct Kitchen KOT Dispatch • Permanent QR
+                </p>
+                <p className="text-[9px] text-[#8A7A6E] mt-0.5 break-all max-w-xs mx-auto">
+                  {getTableQRUrl(selectedTableForQR.name)}
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-2">
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-semibold shadow-md transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-bold shadow-md transition-all"
               >
                 <Printer className="w-4 h-4" />
-                <span>Print Standee</span>
+                <span>Print Table Standee</span>
               </button>
 
               <a
                 href={getTableQRUrl(selectedTableForQR.name)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#5C3A21] border border-[#E8E0D5] text-xs font-semibold transition-all"
+                className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-[#FAF7F2] hover:bg-[#EAE3D9] text-[#5C3A21] border border-[#E8E0D5] text-xs font-bold transition-all"
               >
                 <span>Test Link</span>
                 <ExternalLink className="w-3.5 h-3.5 text-[#E58A3A]" />
@@ -287,11 +336,96 @@ export default function TablesPage() {
         </div>
       )}
 
+      {/* ALL 10 TABLES PRINTABLE SHEET MODAL */}
+      {showPrintAllModal && (
+        <div className="fixed inset-0 z-50 bg-[#241A14]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-[#E8E0D5] relative max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#E8E0D5] pb-3 mb-4">
+              <div>
+                <h3 className="text-lg font-black text-[#241A14] flex items-center gap-2">
+                  <Printer className="w-5 h-5 text-[#E58A3A]" />
+                  Print All 10 Table QR Standees (सर्व १० टेबलचे QR स्टँडी)
+                </h3>
+                <p className="text-xs text-[#8A7A6E]">
+                  हे एकदाच प्रिंट मारून कट करा आणि टेबलवर ॲक्रेलिक स्टँडवर लावा.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#5C3A21] text-white text-xs font-black hover:bg-[#4B2E19] shadow-md"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Sheet Now</span>
+                </button>
+                <button
+                  onClick={() => setShowPrintAllModal(false)}
+                  className="w-8 h-8 rounded-full bg-[#F8F5F0] text-[#665A4F] flex items-center justify-center font-bold text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* The 10-Table Printable Grid */}
+            <div className="printable-area grid grid-cols-2 md:grid-cols-3 gap-4 p-2 bg-[#FAF7F2] rounded-2xl border border-[#E8E0D5]">
+              {tables.slice(0, 10).map(t => (
+                <div
+                  key={t.id}
+                  className="bg-white p-4 rounded-2xl border border-[#E8E0D5] text-center shadow-xs flex flex-col items-center justify-between"
+                >
+                  <div className="flex items-center justify-center gap-1.5 mb-1">
+                    <Coffee className="w-4 h-4 text-[#E58A3A]" />
+                    <span className="font-extrabold text-sm text-[#241A14]">
+                      {settings.cafeName || 'Sairam Chahawala'}
+                    </span>
+                  </div>
+
+                  <p className="text-[10px] text-[#8A7A6E] mb-2 font-medium">
+                    स्कॅन करा व ऑर्डर द्या
+                  </p>
+
+                  <div className="bg-white p-2 rounded-xl border border-[#E8E0D5] inline-block shadow-inner mb-2">
+                    <QRCodeSVG
+                      value={getTableQRUrl(t.name)}
+                      size={130}
+                      level="H"
+                      includeMargin={true}
+                      bgColor="#FFFFFF"
+                      fgColor="#241A14"
+                    />
+                  </div>
+
+                  <div className="px-4 py-1 rounded-full bg-[#5C3A21] text-white font-black text-sm tracking-wide">
+                    {t.name}
+                  </div>
+
+                  <p className="text-[9px] font-bold text-[#E58A3A] mt-1.5">
+                    Direct Kitchen KOT System
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-[#E58A3A] hover:bg-[#D77A28] text-white text-xs font-black shadow-md"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print All 10 Table Cards</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add Table Modal */}
       {showAddTableModal && (
         <div className="fixed inset-0 z-50 bg-[#241A14]/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E8E0D5]">
-            <h3 className="text-lg font-bold text-[#241A14] mb-3">Add New Table</h3>
+            <h3 className="text-lg font-bold text-[#241A14] mb-3">Add Table</h3>
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-[#665A4F] block mb-1">
@@ -336,62 +470,6 @@ export default function TablesPage() {
                   Create Table
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Table Order Details Modal */}
-      {selectedTableForOrder && (
-        <div className="fixed inset-0 z-50 bg-[#241A14]/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E8E0D5]">
-            <div className="flex items-center justify-between border-b border-[#E8E0D5] pb-3 mb-3">
-              <div>
-                <span className="text-xs font-mono font-bold text-[#E58A3A]">#{selectedTableForOrder.id}</span>
-                <h3 className="text-base font-bold text-[#241A14]">{selectedTableForOrder.tableName}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedTableForOrder(null)}
-                className="w-7 h-7 rounded-full bg-[#F8F5F0] text-[#665A4F] hover:text-[#241A14] flex items-center justify-center font-bold text-xs"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="bg-[#FAF7F2] p-3 rounded-xl text-xs flex justify-between">
-                <div>
-                  <span className="text-[#8A7A6E]">Guest:</span>{' '}
-                  <span className="font-semibold text-[#241A14]">{selectedTableForOrder.customerName}</span>
-                </div>
-                <div>
-                  <span className="text-[#8A7A6E]">Status:</span>{' '}
-                  <span className="font-bold text-[#E58A3A]">{selectedTableForOrder.status}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 max-h-48 overflow-y-auto">
-                {selectedTableForOrder.items.map((item, i) => (
-                  <div key={i} className="flex justify-between p-2 rounded-lg border border-[#E8E0D5] text-xs">
-                    <span>{item.quantity}x {item.name}</span>
-                    <span className="font-bold">{formatCurrency(item.price * item.quantity)}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-[#E8E0D5] pt-2 flex justify-between text-sm font-bold">
-                <span>Total:</span>
-                <span>{formatCurrency(selectedTableForOrder.total)}</span>
-              </div>
-            </div>
-
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => setSelectedTableForOrder(null)}
-                className="px-4 py-2 rounded-xl bg-[#5C3A21] text-white text-xs font-semibold"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>

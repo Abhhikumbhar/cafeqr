@@ -35,11 +35,22 @@ export default function CustomerMenuPage() {
     triggerConfetti
   } = useCafe();
 
-  // Detect table from URL: e.g. /menu?table=Table%2004 or /menu?table=4
-  const rawTableParam = searchParams.get('table') || 'Table 04';
-  const tableNumberParsed = rawTableParam.replace(/\D/g, '') || '04';
-  const detectedTableName = `Table ${tableNumberParsed.padStart(2, '0')}`;
-  const currentTable = tables.find(t => t.name.toLowerCase() === detectedTableName.toLowerCase()) || tables[3] || tables[0];
+  // Permanent table detection from QR code scan
+  const rawTableParam = searchParams.get('table');
+  const savedTable = typeof window !== 'undefined' ? sessionStorage.getItem('sairam_scanned_table') : null;
+  const tableParamToUse = rawTableParam || savedTable || 'Table 01';
+  const tableNumberParsed = String(parseInt(tableParamToUse.replace(/\D/g, '') || '1', 10)).padStart(2, '0');
+  const detectedTableName = `Table ${tableNumberParsed}`;
+
+  useEffect(() => {
+    if (rawTableParam) {
+      sessionStorage.setItem('sairam_scanned_table', detectedTableName);
+    }
+  }, [rawTableParam, detectedTableName]);
+
+  const currentTable = tables.find(t => t.name.toLowerCase() === detectedTableName.toLowerCase()) ||
+                       tables.find(t => t.number === parseInt(tableNumberParsed, 10)) ||
+                       tables[0] || { id: `T-${tableNumberParsed}`, name: detectedTableName, number: parseInt(tableNumberParsed, 10) };
 
   // Active Category filter & search
   const [activeCategory, setActiveCategory] = useState('All');
@@ -218,10 +229,10 @@ export default function CustomerMenuPage() {
           </div>
         </div>
 
-        {/* Table Badge */}
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5C3A21] text-white text-xs font-extrabold shadow-sm">
+        {/* Permanent Auto-Locked Table Badge */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#5C3A21] text-white text-xs font-black shadow-md border border-[#E58A3A]/40">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span>{currentTable.name}</span>
+          <span>{currentTable.name} (Auto-Locked)</span>
         </div>
       </header>
 
@@ -230,7 +241,7 @@ export default function CustomerMenuPage() {
         <div className="bg-gradient-to-r from-[#241A14] to-[#5C3A21] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
           <div className="relative z-10 space-y-2">
             <span className="px-2.5 py-0.5 rounded-full bg-[#E58A3A]/30 text-[#E58A3A] font-extrabold text-[10px] uppercase tracking-wider border border-[#E58A3A]/40">
-              Table Order Active
+              📍 {currentTable.name} Scanned • Direct KOT
             </span>
             <h2 className="text-xl sm:text-2xl font-black">
               Welcome to {settings.cafeName}

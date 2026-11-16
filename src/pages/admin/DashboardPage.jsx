@@ -166,14 +166,14 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-baseline justify-between">
             <h3 className="text-2xl font-bold text-[#241A14]">
-              {stats.activeTablesCount} <span className="text-sm font-normal text-[#8A7A6E]">/ {settings.tableCount || 12}</span>
+              {stats.activeTablesCount} <span className="text-sm font-normal text-[#8A7A6E]">/ {settings.tableCount || 10}</span>
             </h3>
             <span className="text-[11px] font-semibold text-blue-600">
-              {Math.round((stats.activeTablesCount / (settings.tableCount || 12)) * 100)}% Occ
+              {Math.round((stats.activeTablesCount / (settings.tableCount || 10)) * 100)}% Occ
             </span>
           </div>
           <p className="text-xs text-[#8A7A6E] mt-1">
-            {(settings.tableCount || 12) - stats.activeTablesCount} tables available now
+            {(settings.tableCount || 10) - stats.activeTablesCount} tables available now
           </p>
         </div>
 
@@ -268,9 +268,9 @@ export default function DashboardPage() {
               </Link>
             </div>
 
-            {/* 12 mini tables grid */}
-            <div className="grid grid-cols-4 gap-2.5">
-              {tables.slice(0, 12).map(table => {
+            {/* 10 mini tables grid */}
+            <div className="grid grid-cols-5 gap-2">
+              {tables.slice(0, 10).map(table => {
                 const statusStyle = STATUS_COLORS[table.status] || STATUS_COLORS.Available;
                 const isOccupied = table.status !== 'Available';
 

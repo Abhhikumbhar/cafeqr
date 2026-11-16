@@ -136,7 +136,7 @@ export function speakAnnouncement(text, options = {}) {
 export function announceNewOrder(order, options = {}) {
   const tableNum = order.tableNumber || (order.tableName ? order.tableName.replace('Table ', '') : 'Unknown');
   const itemsText = formatOrderItemsForVoice(order.items);
-  const speechText = `New Order Received. Table Number ${tableNum}. ${itemsText}.`;
+  const speechText = `New KOT Received. Table Number ${tableNum}. ${itemsText}.`;
   
   speakAnnouncement(speechText, options);
   return speechText;
