@@ -4,10 +4,10 @@ export default function ChaiMascotGreeting({ cafeName = 'The 7 Cafe', onClose })
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    // Show for exactly 2 seconds as requested, then fade out
+    // Show for exactly 4 seconds as requested, then fade out
     const timer = setTimeout(() => {
       handleDismiss();
-    }, 2000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, []);
