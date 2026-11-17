@@ -147,27 +147,81 @@ body {
   }
 }
 
-@keyframes gentle-shake {
+/* Couple Feeling Romantic & Smooth Animations */
+@keyframes couple-float {
   0%, 100% {
-    transform: rotate(0deg) scale(1);
+    transform: translateY(0px) scale(1);
   }
-  15% {
-    transform: rotate(-2.5deg) scale(1.02);
-  }
-  35% {
-    transform: rotate(2.5deg) scale(1.02);
-  }
-  55% {
-    transform: rotate(-1.5deg) scale(1.01);
-  }
-  75% {
-    transform: rotate(1.5deg) scale(1.01);
+  50% {
+    transform: translateY(-7px) scale(1.018);
   }
 }
 
-.animate-gentle-shake {
-  animation: gentle-shake 1.6s ease-in-out infinite;
+@keyframes float-heart-1 {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.6) rotate(-8deg);
+  }
+  40% {
+    opacity: 0.9;
+    transform: translateY(-8px) scale(1.05) rotate(4deg);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translateY(-22px) scale(0.95) rotate(-4deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-36px) scale(0.8) rotate(6deg);
+  }
 }
+
+@keyframes float-heart-2 {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.5) rotate(10deg);
+  }
+  45% {
+    opacity: 0.85;
+    transform: translateY(-10px) scale(1.1) rotate(-6deg);
+  }
+  85% {
+    opacity: 0.6;
+    transform: translateY(-26px) scale(1) rotate(4deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.85) rotate(-8deg);
+  }
+}
+
+@keyframes romantic-glow {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-couple-float {
+  animation: couple-float 3.5s ease-in-out infinite;
+}
+
+.animate-float-heart-1 {
+  animation: float-heart-1 2.8s ease-out infinite;
+}
+
+.animate-float-heart-2 {
+  animation: float-heart-2 3.2s ease-out infinite 1.2s;
+}
+
+.animate-romantic-glow {
+  animation: romantic-glow 3.5s ease-in-out infinite;
+}
+
 
 .font-aesthetic-serif {
   font-family: 'Playfair Display', Georgia, serif;
