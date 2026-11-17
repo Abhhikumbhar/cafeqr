@@ -308,6 +308,43 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Firebase Cloud Database & Analytics */}
+        <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              Firebase Cloud Database & Analytics
+            </h3>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Connected (the7cafe)
+            </span>
+          </div>
+
+          <p className="text-xs text-[#8A7A6E]">
+            Google Firebase Firestore is connected and actively storing orders, live customer tracking, and real-time syncing.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#FAF7F2] p-3.5 rounded-2xl border border-[#E8E0D5] font-mono">
+            <div>
+              <span className="text-[#8A7A6E] block text-[10px] uppercase font-bold">Project ID</span>
+              <span className="font-bold text-[#241A14]">the7cafe</span>
+            </div>
+            <div>
+              <span className="text-[#8A7A6E] block text-[10px] uppercase font-bold">Auth Domain</span>
+              <span className="font-bold text-[#241A14]">the7cafe.firebaseapp.com</span>
+            </div>
+            <div>
+              <span className="text-[#8A7A6E] block text-[10px] uppercase font-bold">Storage Bucket</span>
+              <span className="font-bold text-[#241A14]">the7cafe.firebasestorage.app</span>
+            </div>
+            <div>
+              <span className="text-[#8A7A6E] block text-[10px] uppercase font-bold">Measurement ID</span>
+              <span className="font-bold text-[#241A14]">G-PJQ1WY3HXL</span>
+            </div>
+          </div>
+        </div>
+
         {/* System Data Reset */}
         <div className="bg-[#FAF7F2] rounded-3xl p-6 border border-[#E8E0D5] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>

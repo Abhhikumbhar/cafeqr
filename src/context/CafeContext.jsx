@@ -15,6 +15,11 @@ import {
   publishStatusChangeToCloud,
   subscribeToCloudEvents
 } from '../services/cloudSync';
+import {
+  saveOrderToFirestore,
+  updateOrderStatusInFirestore,
+  subscribeToFirestoreOrders
+} from '../services/firebase';
 
 const CafeContext = createContext(null);
 
@@ -143,9 +148,20 @@ export function CafeProvider({ children }) {
       }
     });
 
+    // 3. Real-time Firebase Firestore synchronization
+    const unsubscribeFirestore = subscribeToFirestoreOrders((orderData, changeType) => {
+      if (!orderData || !orderData.id) return;
+      if (changeType === 'added') {
+        handleIncomingOrder(orderData);
+      } else if (changeType === 'modified') {
+        handleIncomingStatus(orderData.id, orderData.status, orderData.tableId);
+      }
+    });
+
     return () => {
       if (broadcastChan) broadcastChan.close();
       if (unsubscribeCloud) unsubscribeCloud();
+      if (unsubscribeFirestore) unsubscribeFirestore();
     };
   }, [settings.cloudSyncChannel, settings.voiceEnabled, settings.voiceRate, settings.voicePitch, settings.voiceVolume]);
 
@@ -415,6 +431,7 @@ export function CafeProvider({ children }) {
     // Broadcast to Cloud Relay (Phone ➔ Laptop) and local BroadcastChannel
     const channelName = getSyncChannel(settings);
     publishOrderToCloud(newOrder, channelName);
+    saveOrderToFirestore(newOrder);
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       try {
         const bc = new BroadcastChannel('sairam_live_sync_channel');
@@ -465,6 +482,7 @@ export function CafeProvider({ children }) {
     // Broadcast status change to Cloud and other open tabs
     const channelName = getSyncChannel(settings);
     publishStatusChangeToCloud(orderId, newStatus, affectedOrder?.tableId, channelName);
+    updateOrderStatusInFirestore(orderId, newStatus, affectedOrder?.tableId);
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       try {
         const bc = new BroadcastChannel('sairam_live_sync_channel');
