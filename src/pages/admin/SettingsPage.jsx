@@ -266,7 +266,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-[#E58A3A]" />
-              Real-time Cloud Sync (मोबाईल ते लॅपटॉप लाईव्ह सिंक)
+              Real-time Cloud Sync (Mobile to Laptop Live Sync)
             </h3>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">
               Active Bridge
@@ -274,7 +274,7 @@ export default function SettingsPage() {
           </div>
 
           <p className="text-xs text-[#8A7A6E]">
-            ग्राहकाने कोणत्याही मोबाईलवरून टेबल QR स्कॅन करून ऑर्डर दिली की ती इंटरनेटद्वारे थेट तुमच्या लॅपटॉपच्या किचन KOT स्क्रीनवर येण्यासाठी हा चॅनेल वापरला जातो.
+            This cloud channel instantly relays orders from customer mobile table QR scans directly to your kitchen KOT display and counter POS in real time.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">

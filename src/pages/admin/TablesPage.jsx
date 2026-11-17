@@ -77,10 +77,10 @@ export default function TablesPage() {
           </div>
           <h2 className="text-2xl font-black text-[#241A14] flex items-center gap-2">
             <Grid3X3 className="w-6 h-6 text-[#5C3A21]" />
-            Table Management (१० टेबल्स)
+            Table Management (10 Tables)
           </h2>
           <p className="text-xs text-[#8A7A6E]">
-            एकदाच प्रिंट मारून टेबलवर ठेवा. स्कॅन करताच टेबल नंबर ऑटो-डिटेक्ट होऊन थेट KOT किचनमध्ये जाईल.
+            Print once and place on dining tables. Scanning auto-detects the table number and sends orders directly to the Kitchen KOT.
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export default function TablesPage() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#E58A3A] hover:bg-[#D77A28] text-white text-xs font-black shadow-md shadow-[#E58A3A]/25 transition-all"
           >
             <Printer className="w-4 h-4" />
-            <span>Print All 10 Tables Sheet (सर्व १० QRs एकत्र प्रिंट)</span>
+            <span>Print All 10 Tables Sheet</span>
           </button>
 
           <button
@@ -110,10 +110,10 @@ export default function TablesPage() {
           <Link2 className="w-5 h-5 text-[#E58A3A] shrink-0" />
           <div>
             <h4 className="text-xs font-extrabold text-[#241A14]">
-              Permanent Table QR Website URL (लाईव्ह डोमेन)
+              Permanent Table QR Website URL (Live Domain)
             </h4>
             <p className="text-[11px] text-[#8A7A6E]">
-              प्रिंट मारताना QR कोडमध्ये ही लिंक कायमस्वरूपी राहील. ग्राहकाने स्कॅन केल्यावर थेट हा मेनू उघडेल.
+              This live link is encoded into the permanent QR codes so customers open your digital menu when scanning.
             </p>
           </div>
         </div>
@@ -344,10 +344,10 @@ export default function TablesPage() {
               <div>
                 <h3 className="text-lg font-black text-[#241A14] flex items-center gap-2">
                   <Printer className="w-5 h-5 text-[#E58A3A]" />
-                  Print All 10 Table QR Standees (सर्व १० टेबलचे QR स्टँडी)
+                  Print All 10 Table QR Standees
                 </h3>
                 <p className="text-xs text-[#8A7A6E]">
-                  हे एकदाच प्रिंट मारून कट करा आणि टेबलवर ॲक्रेलिक स्टँडवर लावा.
+                  Print once, cut along borders, and place into table acrylic standees.
                 </p>
               </div>
 
@@ -383,7 +383,7 @@ export default function TablesPage() {
                   </div>
 
                   <p className="text-[10px] text-[#8A7A6E] mb-2 font-medium">
-                    स्कॅन करा व ऑर्डर द्या
+                    Scan to Browse & Order
                   </p>
 
                   <div className="bg-white p-2 rounded-xl border border-[#E8E0D5] inline-block shadow-inner mb-2">

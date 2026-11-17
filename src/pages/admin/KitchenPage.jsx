@@ -56,7 +56,7 @@ export default function KitchenPage({ isFullscreen = false }) {
             </span>
           </div>
           <h2 className={`text-2xl sm:text-3xl font-black tracking-tight ${isFullscreen ? 'text-white' : 'text-[#241A14]'}`}>
-            किचन KOT डिस्पॅच स्क्रीन
+            Kitchen KOT Dispatch Screen
           </h2>
         </div>
 
@@ -102,7 +102,7 @@ export default function KitchenPage({ isFullscreen = false }) {
         <div className="flex items-center gap-2.5">
           <Volume2 className="w-4 h-4 text-emerald-600 shrink-0 animate-pulse" />
           <span className="font-semibold">
-            <strong>KOT Voice Alarm Active:</strong> ग्राहक मोबाईलवरून ऑर्डर देताच थेट येथे किचनमध्ये मोठ्या आवाजात अनाउन्समेंट होईल.
+            <strong>KOT Voice Alarm Active:</strong> Immediate voice announcement alerts kitchen staff when customers submit orders from their table.
           </span>
         </div>
         <button
@@ -118,9 +118,9 @@ export default function KitchenPage({ isFullscreen = false }) {
         {[
           { id: 'Active', label: 'All Active KOTs', count: activeOrders.length },
           { id: 'Pending', label: 'New Orders (Pending)', count: orders.filter(o => o.status === 'Order Pending').length },
-          { id: 'Preparing', label: 'Preparing (स्टोव्हवर)', count: orders.filter(o => o.status === 'Preparing').length },
-          { id: 'Ready', label: 'Ready For Service (तयार)', count: orders.filter(o => o.status === 'Ready').length },
-          { id: 'Served', label: 'Served (दिले)', count: orders.filter(o => o.status === 'Served').length }
+          { id: 'Preparing', label: 'Preparing (Kitchen)', count: orders.filter(o => o.status === 'Preparing').length },
+          { id: 'Ready', label: 'Ready For Service', count: orders.filter(o => o.status === 'Ready').length },
+          { id: 'Served', label: 'Served (Delivered)', count: orders.filter(o => o.status === 'Served').length }
         ].map(tab => (
           <button
             key={tab.id}
@@ -145,7 +145,7 @@ export default function KitchenPage({ isFullscreen = false }) {
         }`}>
           <ChefHat className="w-12 h-12 mx-auto mb-3 opacity-30 text-[#E58A3A]" />
           <h3 className="text-base font-bold">All Kitchen KOTs Cleared!</h3>
-          <p className="text-xs mt-1">टेबल QR स्कॅन करून ग्राहकाने ऑर्डर दिल्यास थेट येथे आवाज आणि KOT तिकीट येईल.</p>
+          <p className="text-xs mt-1">Orders placed from table QR scans will appear here instantly with live voice alerts.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -245,7 +245,7 @@ export default function KitchenPage({ isFullscreen = false }) {
                           {item.specialInstructions ? (
                             <div className="mt-1 px-2 py-1 bg-amber-500/20 text-amber-400 rounded-lg text-[11px] font-bold border border-amber-500/30 flex items-center gap-1">
                               <AlertCircle className="w-3 h-3 shrink-0" />
-                              <span>टीप: "{item.specialInstructions}"</span>
+                              <span>Note: "{item.specialInstructions}"</span>
                             </div>
                           ) : null}
                         </div>
@@ -262,7 +262,7 @@ export default function KitchenPage({ isFullscreen = false }) {
                       className="w-full py-3 px-4 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 transform active:scale-95"
                     >
                       <Flame className="w-4 h-4" />
-                      <span>Accept KOT & Start Prep (स्वीकारा)</span>
+                      <span>Accept KOT & Start Prep</span>
                     </button>
                   )}
 
@@ -272,7 +272,7 @@ export default function KitchenPage({ isFullscreen = false }) {
                       className="w-full py-3 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 transform active:scale-95"
                     >
                       <CheckCircle2 className="w-4 h-4" />
-                      <span>Mark Ready (ऑर्डर तयार झाली)</span>
+                      <span>Mark Ready (Order Prepared)</span>
                     </button>
                   )}
 
@@ -282,7 +282,7 @@ export default function KitchenPage({ isFullscreen = false }) {
                       className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 transform active:scale-95"
                     >
                       <UtensilsCrossed className="w-4 h-4" />
-                      <span>Mark Served (टेबलवर दिली)</span>
+                      <span>Mark Served (Delivered)</span>
                     </button>
                   )}
 

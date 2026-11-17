@@ -54,7 +54,7 @@ export default function Header({ toggleMobileSidebar }) {
               <span className="text-amber-200 uppercase tracking-wide mr-1.5 font-black">
                 [LIVE ORDER]
               </span>
-              <span>{latestPending.tableName} वरून {latestPending.kotNumber} ऑर्डर आली!</span>
+              <span>New order received from {latestPending.tableName} ({latestPending.kotNumber})!</span>
               <span className="text-amber-100 font-normal ml-1.5 hidden sm:inline">
                 ({latestPending.items.map(i => `${i.quantity}x ${i.name}`).join(', ')})
               </span>
@@ -67,13 +67,13 @@ export default function Header({ toggleMobileSidebar }) {
               className="px-3 py-1 rounded-xl bg-white text-[#5C3A21] hover:bg-amber-100 font-extrabold text-[11px] shadow-sm flex items-center gap-1 transition-all"
             >
               <UtensilsCrossed className="w-3.5 h-3.5 text-[#E58A3A]" />
-              <span>किचन KOT उघडा</span>
+              <span>Open Kitchen KOT</span>
             </Link>
             <Link
               to="/admin/pos"
               className="hidden sm:flex px-2.5 py-1 rounded-xl bg-black/25 hover:bg-black/40 text-white font-semibold text-[11px] transition-all"
             >
-              <span>POS बिल</span>
+              <span>POS Bill</span>
             </Link>
             <button
               onClick={() => setDismissedOrderId(latestPending.id)}
