@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
 import ChaiMascotGreeting from '../../components/common/ChaiMascotGreeting';
+import PizzaBuilderModal from '../../components/customer/PizzaBuilderModal';
 import {
   Coffee,
   Search,
@@ -60,6 +61,9 @@ export default function CustomerMenuPage() {
 
   // Cartoon Mascot Welcome Animation
   const [showMascotGreeting, setShowMascotGreeting] = useState(true);
+
+  // Pizza Customizer Modal
+  const [isPizzaBuilderOpen, setIsPizzaBuilderOpen] = useState(false);
 
   // Cart state
   const [cartItems, setCartItems] = useState([]);
@@ -290,6 +294,45 @@ export default function CustomerMenuPage() {
         </div>
       </div>
 
+      {/* Build Your Own Pizza Interactive Banner (Instagram Reel Style) */}
+      <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full mb-3 -mt-1">
+        <div
+          onClick={() => setIsPizzaBuilderOpen(true)}
+          className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-[#FFF6EC] via-[#FDF1E3] to-[#FCE8D3] border-2 border-[#F3CFA8] shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-between group overflow-hidden relative active:scale-[0.99]"
+        >
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#E58A3A] to-[#B85714] flex items-center justify-center text-2xl shadow-md transform group-hover:scale-110 group-hover:rotate-6 transition-all shrink-0">
+              🍕
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-extrabold uppercase mb-0.5">
+                <Sparkles className="w-3 h-3 text-orange-600" />
+                <span>Live Interactive Pizza Builder</span>
+              </div>
+              <h3 className="text-xs sm:text-sm font-black text-[#241A14] flex items-center gap-1.5">
+                <span>Build Your Own Pizza</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-500 text-white font-extrabold uppercase animate-pulse">
+                  Hot
+                </span>
+              </h3>
+              <p className="text-[10px] sm:text-[11px] text-[#665A4F] line-clamp-1">
+                Choose crust, sauces & watch toppings drop live on your pizza!
+              </p>
+            </div>
+          </div>
+
+          <div className="relative z-10 shrink-0 pl-2">
+            <span className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-[#5C3A21] group-hover:bg-[#4B2E19] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1 transition-all">
+              <span>Build</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </span>
+          </div>
+
+          {/* Background decorative glow */}
+          <div className="absolute right-[-15px] top-[-15px] w-28 h-28 rounded-full bg-amber-400/10 pointer-events-none group-hover:scale-125 transition-transform" />
+        </div>
+      </div>
+
       {/* Search & Veg Filter */}
       <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full space-y-3">
         <div className="flex items-center gap-2">
@@ -337,6 +380,36 @@ export default function CustomerMenuPage() {
 
       {/* Menu Dishes List */}
       <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full mt-4 space-y-3">
+        {/* If Pizza category active, show Customizer Card */}
+        {activeCategory === 'Pizza' && (
+          <div
+            onClick={() => setIsPizzaBuilderOpen(true)}
+            className="bg-gradient-to-r from-[#D97724] to-[#B85714] rounded-3xl p-4 text-white shadow-md hover:shadow-lg transition-all flex items-center justify-between cursor-pointer group active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-3xl p-2 rounded-2xl bg-white/20 backdrop-blur-xs transform group-hover:scale-110 group-hover:rotate-12 transition-transform">
+                🍕
+              </span>
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-wider bg-black/20 px-2 py-0.5 rounded-full">
+                  Interactive Builder
+                </span>
+                <h4 className="font-extrabold text-sm mt-0.5">
+                  Create Your Own Custom Pizza
+                </h4>
+                <p className="text-[11px] text-amber-100">
+                  Select crust, sauces & tap toppings to drop live!
+                </p>
+              </div>
+            </div>
+
+            <button className="px-3.5 py-1.5 rounded-xl bg-white text-[#5C3A21] text-xs font-black shadow-md shrink-0 flex items-center gap-1 group-hover:bg-amber-100 transition-colors">
+              <span>Start</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
         {filteredItems.map(item => (
           <div
             key={item.id}
@@ -664,6 +737,16 @@ export default function CustomerMenuPage() {
           </div>
         </div>
       )}
+
+      {/* Live Interactive Pizza Builder Modal (Reel-style Customizer) */}
+      <PizzaBuilderModal
+        isOpen={isPizzaBuilderOpen}
+        onClose={() => setIsPizzaBuilderOpen(false)}
+        onAddToCart={(item, qty, instructions) => {
+          handleAddToCart(item, qty, instructions);
+          triggerConfetti();
+        }}
+      />
     </div>
   );
 }
