@@ -30,7 +30,9 @@ const STORAGE_KEYS = {
   CUSTOMERS: 'sairam_v4_customers',
   ORDERS: 'sairam_v4_orders',
   COUPONS: 'sairam_v4_coupons',
-  ANNOUNCED_ORDERS: 'sairam_v4_announced_orders'
+  ANNOUNCED_ORDERS: 'sairam_v4_announced_orders',
+  EXPENSES: 'sairam_v4_expenses',
+  REGISTER: 'sairam_v4_register'
 };
 
 export function CafeProvider({ children }) {
@@ -98,6 +100,26 @@ export function CafeProvider({ children }) {
       return saved ? JSON.parse(saved) : INITIAL_COUPONS;
     } catch {
       return INITIAL_COUPONS;
+    }
+  });
+
+  // 7. Daily Petty Cash Expenses State
+  const [expenses, setExpenses] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.EXPENSES);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // 8. Cash Drawer & Shift Register State
+  const [register, setRegister] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.REGISTER);
+      return saved ? JSON.parse(saved) : { openingCash: 1000, date: new Date().toDateString(), closed: false };
+    } catch {
+      return { openingCash: 1000, date: new Date().toDateString(), closed: false };
     }
   });
 
@@ -257,6 +279,14 @@ export function CafeProvider({ children }) {
     localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(coupons));
   }, [coupons]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
+  }, [expenses]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.REGISTER, JSON.stringify(register));
+  }, [register]);
+
   // Toast helper
   const addToast = (message, type = 'info', duration = 3500) => {
     const id = Date.now() + Math.random().toString(36).substring(2, 6);
@@ -363,7 +393,102 @@ export function CafeProvider({ children }) {
 
   // --- Order Operations ---
   const createOrder = (orderData) => {
-    // Generate unique order ID
+    // Check if table already has an active running order (unsettled)
+    const existingOrder = orderData.tableId && !orderData.forceNew
+      ? orders.find(
+          o => (o.tableId === orderData.tableId || o.tableName === orderData.tableName) && o.status !== 'Completed'
+        )
+      : null;
+
+    if (existingOrder) {
+      // REAL CAFE RUNNING TABLE: Append items to existing check and issue a new KOT round for kitchen!
+      const currentRounds = existingOrder.rounds || [
+        { round: 1, kotNumber: existingOrder.kotNumber, items: existingOrder.items, createdAt: existingOrder.createdAt }
+      ];
+      const newRoundNumber = currentRounds.length + 1;
+      const newKotNumber = `KOT-${String(orders.length + 101)}`;
+
+      const combinedItems = [...existingOrder.items, ...orderData.items];
+      const newSubtotal = combinedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const gstRate = (settings.gstPercentage || 5) / 100;
+      const newGst = Math.round(newSubtotal * gstRate * 100) / 100;
+      const newTotal = Math.max(0, newSubtotal + newGst - (existingOrder.discount || 0));
+
+      const updatedRounds = [
+        ...currentRounds,
+        {
+          round: newRoundNumber,
+          kotNumber: newKotNumber,
+          items: orderData.items,
+          createdAt: new Date().toISOString()
+        }
+      ];
+
+      const updatedOrder = {
+        ...existingOrder,
+        kotNumber: `${existingOrder.kotNumber}, ${newKotNumber}`,
+        latestKotNumber: newKotNumber,
+        items: combinedItems,
+        subtotal: newSubtotal,
+        gst: newGst,
+        total: newTotal,
+        rounds: updatedRounds,
+        status: 'Order Pending', // Move back to pending prep so kitchen sees the new round
+        updatedAt: new Date().toISOString()
+      };
+
+      // Ticket specifically for the kitchen display & print for ONLY the newly added items
+      const kitchenRoundTicket = {
+        id: `${existingOrder.id}-R${newRoundNumber}`,
+        parentOrderId: existingOrder.id,
+        kotNumber: `${newKotNumber} (Round ${newRoundNumber})`,
+        tableId: existingOrder.tableId,
+        tableNumber: existingOrder.tableNumber,
+        tableName: existingOrder.tableName,
+        customerName: existingOrder.customerName,
+        customerPhone: existingOrder.customerPhone,
+        items: orderData.items, // Only newly added items for the chef!
+        round: newRoundNumber,
+        status: 'Order Pending',
+        createdAt: new Date().toISOString(),
+        isAdditionalRound: true
+      };
+
+      setOrders(prev => prev.map(o => o.id === existingOrder.id ? updatedOrder : o));
+      updateTableStatus(orderData.tableId, 'Order Pending', existingOrder.id);
+
+      // Voice announcement ONLY on counter/kitchen device, NOT on customer mobile self-ordering screen!
+      const isCustomerDevice = typeof window !== 'undefined' && window.location.pathname.startsWith('/menu');
+      if (!isCustomerDevice && !orderData.silentLocal) {
+        if (settings.voiceEnabled) {
+          const spokenText = announceNewOrder(kitchenRoundTicket, {
+            rate: settings.voiceRate || 1.0,
+            pitch: settings.voicePitch || 1.0,
+            volume: settings.voiceVolume || 1.0
+          });
+          setLastVoiceAlert(spokenText);
+        } else {
+          playChimeSound();
+        }
+      }
+
+      // Broadcast to Cloud Relay and Firestore
+      const channelName = getSyncChannel(settings);
+      publishOrderToCloud(kitchenRoundTicket, channelName);
+      saveOrderToFirestore(updatedOrder);
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        try {
+          const bc = new BroadcastChannel('sairam_live_sync_channel');
+          bc.postMessage({ type: 'NEW_ORDER', order: kitchenRoundTicket });
+          bc.close();
+        } catch (e) {}
+      }
+
+      addToast(`Added Round #${newRoundNumber} (${newKotNumber}) to ${existingOrder.tableName}'s running bill!`, 'success');
+      return updatedOrder;
+    }
+
+    // Generate unique order ID for first round
     const nextNum = orders.length + 1001;
     const orderId = `ORD-${nextNum}`;
 
@@ -785,6 +910,37 @@ export function CafeProvider({ children }) {
     return { valid: false, message: 'Invalid or expired coupon code' };
   };
 
+  // --- Daily Expense & Cash Register Operations ---
+  const addExpense = (title, amount, category = 'Supplies') => {
+    const val = Number(amount) || 0;
+    if (val <= 0 || !title) return null;
+    const newExp = {
+      id: `EXP-${Date.now()}`,
+      title,
+      amount: val,
+      category,
+      createdAt: new Date().toISOString()
+    };
+    setExpenses(prev => [newExp, ...prev]);
+    addToast(`Expense recorded: ${title} (-${formatCurrency(val)})`, 'info');
+    return newExp;
+  };
+
+  const deleteExpense = (id) => {
+    setExpenses(prev => prev.filter(e => e.id !== id));
+    addToast('Expense removed', 'info');
+  };
+
+  const updateOpeningCash = (amount) => {
+    const val = Number(amount) || 0;
+    setRegister(prev => ({
+      ...prev,
+      openingCash: val,
+      date: new Date().toDateString()
+    }));
+    addToast(`Opening cash float set to ${formatCurrency(val)}`, 'success');
+  };
+
   // --- Reset Entire Demo Data ---
   const resetDemoData = () => {
     setSettings(INITIAL_SETTINGS);
@@ -793,6 +949,8 @@ export function CafeProvider({ children }) {
     setCustomers(INITIAL_CUSTOMERS);
     setOrders(INITIAL_ORDERS);
     setCoupons(INITIAL_COUPONS);
+    setExpenses([]);
+    setRegister({ openingCash: 1000, date: new Date().toDateString(), closed: false });
     announcedOrderIdsRef.current = new Set(INITIAL_ORDERS.map(o => o.id));
 
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(INITIAL_SETTINGS));
@@ -801,6 +959,8 @@ export function CafeProvider({ children }) {
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(INITIAL_CUSTOMERS));
     localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(INITIAL_ORDERS));
     localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(INITIAL_COUPONS));
+    localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.REGISTER, JSON.stringify({ openingCash: 1000, date: new Date().toDateString(), closed: false }));
     localStorage.setItem(
       STORAGE_KEYS.ANNOUNCED_ORDERS,
       JSON.stringify([...announcedOrderIdsRef.current])
@@ -823,6 +983,22 @@ export function CafeProvider({ children }) {
       .filter(o => o.status === 'Completed')
       .reduce((sum, o) => sum + (o.total || 0), 0);
 
+    const todaysCashSales = todaysOrders
+      .filter(o => o.status === 'Completed' && o.paymentMethod === 'Cash')
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+
+    const todaysUpiSales = todaysOrders
+      .filter(o => o.status === 'Completed' && (o.paymentMethod === 'UPI' || !o.paymentMethod || o.paymentMethod === 'Pending'))
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+
+    const todaysExpensesList = expenses.filter(
+      e => new Date(e.createdAt).toDateString() === today
+    );
+    const todaysExpensesTotal = todaysExpensesList.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+    const openingCash = register?.openingCash || 1000;
+    const expectedCashInDrawer = openingCash + todaysCashSales - todaysExpensesTotal;
+
     const pendingOrders = orders.filter(
       o => o.status === 'Order Pending' || o.status === 'Preparing'
     );
@@ -835,6 +1011,11 @@ export function CafeProvider({ children }) {
       totalRevenue,
       todaysOrdersCount: todaysOrders.length,
       todaysRevenue,
+      todaysCashSales,
+      todaysUpiSales,
+      todaysExpensesTotal,
+      openingCash,
+      expectedCashInDrawer,
       totalOrdersCount: orders.length,
       completedOrdersCount: completedOrders.length,
       pendingOrdersCount: pendingOrders.length,
@@ -842,7 +1023,7 @@ export function CafeProvider({ children }) {
       totalCustomersCount: customers.length,
       avgOrderValue
     };
-  }, [orders, tables, customers]);
+  }, [orders, tables, customers, expenses, register]);
 
   const value = {
     settings,
@@ -867,6 +1048,11 @@ export function CafeProvider({ children }) {
     cancelOrder,
     coupons,
     validateCoupon,
+    expenses,
+    register,
+    addExpense,
+    deleteExpense,
+    updateOpeningCash,
     voice: {
       voiceEnabled: settings.voiceEnabled,
       toggleVoiceAlerts,

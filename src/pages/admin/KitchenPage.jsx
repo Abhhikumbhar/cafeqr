@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCafe } from '../../context/CafeContext';
 import { formatTimeAgo, formatDateTime } from '../../utils/formatters';
+import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
 import {
   UtensilsCrossed,
   Clock,
@@ -301,67 +302,13 @@ export default function KitchenPage({ isFullscreen = false }) {
 
       {/* Printable Thermal KOT Slip Modal */}
       {printingKot && (
-        <div className="fixed inset-0 z-50 bg-[#241A14]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-xs w-full p-6 shadow-2xl border border-[#E8E0D5] relative text-center">
-            <button
-              onClick={() => setPrintingKot(null)}
-              className="absolute top-4 right-4 w-7 h-7 rounded-full bg-[#F8F5F0] text-[#665A4F] flex items-center justify-center font-bold text-xs"
-            >
-              ✕
-            </button>
-
-            {/* Thermal KOT Ticket */}
-            <div className="printable-area p-4 bg-[#FAF7F2] rounded-2xl border border-dashed border-[#8A7A6E] font-mono text-xs text-left space-y-2 mb-4">
-              <div className="text-center border-b border-dashed border-[#8A7A6E] pb-2">
-                <h4 className="font-black text-sm uppercase">KITCHEN ORDER TICKET (KOT)</h4>
-                <p className="font-bold text-xs text-[#5C3A21]">{settings.cafeName}</p>
-              </div>
-
-              <div className="flex justify-between font-black text-sm border-b border-dashed border-[#8A7A6E] pb-1">
-                <span>{printingKot.tableName}</span>
-                <span>{printingKot.kotNumber || printingKot.id}</span>
-              </div>
-
-              <div className="text-[10px] text-[#8A7A6E]">
-                Time: {formatDateTime(printingKot.createdAt)}
-              </div>
-
-              <div className="border-t border-b border-dashed border-[#8A7A6E] py-2 space-y-1.5">
-                {printingKot.items.map((it, i) => (
-                  <div key={i} className="flex items-start justify-between">
-                    <span className="font-black text-sm w-8">{it.quantity}x</span>
-                    <div className="flex-1">
-                      <p className="font-bold text-xs">{it.name}</p>
-                      {it.specialInstructions && (
-                        <p className="text-[10px] text-amber-700 font-sans italic">Note: "{it.specialInstructions}"</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-[10px] text-center text-[#8A7A6E] pt-1">
-                Customer: {printingKot.customerName || 'Walk-in'}
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-2 rounded-xl bg-[#5C3A21] text-white text-xs font-bold hover:bg-[#4B2E19] flex items-center justify-center gap-1.5"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print KOT</span>
-              </button>
-              <button
-                onClick={() => setPrintingKot(null)}
-                className="py-2 px-3 rounded-xl bg-gray-100 text-[#241A14] text-xs font-bold"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <ThermalReceiptModal
+          isOpen={Boolean(printingKot)}
+          onClose={() => setPrintingKot(null)}
+          order={printingKot}
+          settings={settings}
+          type="kot"
+        />
       )}
     </div>
   );

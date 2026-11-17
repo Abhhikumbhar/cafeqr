@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
+import CashRegisterModal from '../../components/admin/CashRegisterModal';
 import {
   Calculator,
   Search,
@@ -62,6 +64,7 @@ export default function PosPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('UPI');
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [lastCompletedOrder, setLastCompletedOrder] = useState(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const categories = [
     'All',
@@ -277,22 +280,32 @@ export default function PosPage() {
           </p>
         </div>
 
-        {/* Table Selector */}
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-bold text-[#5C3A21] uppercase tracking-wider">
-            Active Table:
-          </label>
-          <select
-            value={selectedTableId}
-            onChange={(e) => setSelectedTableId(e.target.value)}
-            className="px-4 py-2 rounded-2xl bg-white border border-[#E8E0D5] text-[#241A14] font-bold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5C3A21]"
+        {/* Table Selector & Register */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={() => setShowRegisterModal(true)}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#241A14] to-[#3B281B] text-amber-300 border border-[#5C3A21] font-bold text-xs shadow-sm hover:scale-[1.02] transition-all"
           >
-            {tables.map(t => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.status}) {t.activeOrderId ? `• ${t.activeOrderId}` : ''}
-              </option>
-            ))}
-          </select>
+            <Banknote className="w-4 h-4 text-emerald-400" />
+            <span>Cash Register & Z-Report</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-[#5C3A21] uppercase tracking-wider">
+              Active Table:
+            </label>
+            <select
+              value={selectedTableId}
+              onChange={(e) => setSelectedTableId(e.target.value)}
+              className="px-4 py-2 rounded-2xl bg-white border border-[#E8E0D5] text-[#241A14] font-bold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5C3A21]"
+            >
+              {tables.map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name} ({t.status}) {t.activeOrderId ? `• ${t.activeOrderId}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -719,95 +732,20 @@ export default function PosPage() {
 
       {/* Printable Thermal Receipt Modal */}
       {showReceiptModal && lastCompletedOrder && (
-        <div className="fixed inset-0 z-50 bg-[#241A14]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E8E0D5] relative">
-            <button
-              onClick={() => setShowReceiptModal(false)}
-              className="absolute top-4 right-4 w-7 h-7 rounded-full bg-[#F8F5F0] text-[#665A4F] hover:text-[#241A14] flex items-center justify-center font-bold text-xs"
-            >
-              ✕
-            </button>
-
-            {/* The Thermal Bill Slip */}
-            <div className="printable-area p-5 bg-[#FAF7F2] rounded-2xl border border-dashed border-[#8A7A6E] font-mono text-xs space-y-3 mb-4">
-              <div className="text-center border-b border-dashed border-[#8A7A6E] pb-2">
-                <h4 className="font-bold text-sm tracking-wider uppercase text-[#241A14]">
-                  {settings.cafeName}
-                </h4>
-                <p className="text-[10px] text-[#8A7A6E]">{settings.address}</p>
-                <p className="text-[10px] text-[#8A7A6E]">Tel: {settings.phone}</p>
-                <p className="text-[10px] text-[#8A7A6E]">GST: {settings.gstNumber}</p>
-              </div>
-
-              <div className="flex justify-between text-[11px]">
-                <span>Bill: #{lastCompletedOrder.id}</span>
-                <span>{lastCompletedOrder.tableName}</span>
-              </div>
-              <div className="text-[10px] text-[#8A7A6E]">
-                {formatDateTime(lastCompletedOrder.completedAt || lastCompletedOrder.createdAt)}
-              </div>
-
-              {/* Items Table */}
-              <div className="border-t border-b border-dashed border-[#8A7A6E] py-2 space-y-1">
-                {lastCompletedOrder.items.map((it, i) => (
-                  <div key={i} className="flex justify-between">
-                    <span>{it.quantity}x {it.name}</span>
-                    <span>{formatCurrency(it.price * it.quantity)}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Totals */}
-              <div className="space-y-1 text-[11px]">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>{formatCurrency(lastCompletedOrder.subtotal)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>GST ({settings.gstPercentage}%):</span>
-                  <span>{formatCurrency(lastCompletedOrder.gst)}</span>
-                </div>
-                {lastCompletedOrder.discount > 0 && (
-                  <div className="flex justify-between text-emerald-600">
-                    <span>Discount:</span>
-                    <span>-{formatCurrency(lastCompletedOrder.discount)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-sm pt-1 border-t border-dashed border-[#8A7A6E]">
-                  <span>NET TOTAL:</span>
-                  <span>{formatCurrency(lastCompletedOrder.total)}</span>
-                </div>
-                <div className="flex justify-between text-[10px] text-[#8A7A6E]">
-                  <span>Paid via:</span>
-                  <span>{lastCompletedOrder.paymentMethod}</span>
-                </div>
-              </div>
-
-              <div className="text-center text-[10px] border-t border-dashed border-[#8A7A6E] pt-2 text-[#8A7A6E]">
-                Thank you for visiting {settings.cafeName}!
-                <br />Have a wonderful day!
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-2.5 rounded-xl bg-[#5C3A21] text-white text-xs font-semibold hover:bg-[#4B2E19] flex items-center justify-center gap-1.5"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print Bill</span>
-              </button>
-              <button
-                onClick={() => setShowReceiptModal(false)}
-                className="py-2.5 px-4 rounded-xl bg-gray-100 text-[#241A14] text-xs font-semibold hover:bg-gray-200"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <ThermalReceiptModal
+          isOpen={showReceiptModal}
+          onClose={() => setShowReceiptModal(false)}
+          order={lastCompletedOrder}
+          settings={settings}
+          type="bill"
+        />
       )}
+
+      {/* Cash Register & Day-End Z-Report Modal */}
+      <CashRegisterModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+      />
     </div>
   );
 }

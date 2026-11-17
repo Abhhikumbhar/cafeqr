@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
+import CashRegisterModal from '../../components/admin/CashRegisterModal';
 import {
   BarChart3,
   Calendar,
@@ -17,6 +18,7 @@ import {
 export default function ReportsPage() {
   const { stats, orders, tables, menuItems, customers, settings } = useCafe();
   const [timeRange, setTimeRange] = useState('All');
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Breakdown of payment methods
   const paymentBreakdown = React.useMemo(() => {
@@ -74,7 +76,15 @@ export default function ReportsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setIsRegisterOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-[#241A14] to-[#3B281B] text-amber-300 border border-[#5C3A21] shadow-sm hover:scale-[1.02] transition-all"
+          >
+            <Banknote className="w-4 h-4 text-emerald-400" />
+            <span>Cash Register & Day-End Z-Report</span>
+          </button>
+
           {['Today', 'This Week', 'This Month', 'All'].map(range => (
             <button
               key={range}
@@ -250,6 +260,12 @@ export default function ReportsPage() {
           ))}
         </div>
       </div>
+
+      {/* Cash Register & Day-End Z-Report Modal */}
+      <CashRegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+      />
     </div>
   );
 }

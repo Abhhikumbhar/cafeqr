@@ -145,33 +145,70 @@ export default function CustomerOrderTrackingPage() {
         </div>
       </div>
 
-      {/* Order Items Breakdown */}
-      <div className="bg-white rounded-3xl p-5 border border-[#E8E0D5] shadow-sm space-y-3">
-        <h3 className="font-extrabold text-sm text-[#241A14] border-b border-[#E8E0D5] pb-2">
-          Ordered Dishes
-        </h3>
-
-        <div className="space-y-2">
-          {order.items.map((item, idx) => (
-            <div key={idx} className="flex items-center justify-between text-xs">
-              <div>
-                <span className="font-bold text-[#241A14]">{item.quantity}x {item.name}</span>
-                {item.specialInstructions && (
-                  <p className="text-[10px] text-[#E58A3A] italic">
-                    Note: "{item.specialInstructions}"
-                  </p>
-                )}
-              </div>
-              <span className="font-bold text-[#5C3A21]">
-                {formatCurrency(item.price * item.quantity)}
-              </span>
-            </div>
-          ))}
+      {/* Order Items Breakdown & Multi-Round Tickets */}
+      <div className="bg-white rounded-3xl p-5 border border-[#E8E0D5] shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-[#E8E0D5] pb-2">
+          <h3 className="font-extrabold text-sm text-[#241A14]">
+            Ordered Dishes
+          </h3>
+          {order.rounds && order.rounds.length > 1 && (
+            <span className="text-[10px] font-black uppercase tracking-wider bg-amber-100 text-[#5C3A21] px-2 py-0.5 rounded-full">
+              {order.rounds.length} Kitchen Rounds
+            </span>
+          )}
         </div>
 
+        {order.rounds && order.rounds.length > 1 ? (
+          <div className="space-y-4">
+            {order.rounds.map((round) => (
+              <div key={round.roundNumber} className="p-3 bg-[#FAF7F2] rounded-2xl border border-[#E8E0D5]/70 space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-bold text-[#5C3A21] border-b border-[#E8E0D5]/50 pb-1.5">
+                  <span>Round {round.roundNumber} • {round.kotNumber}</span>
+                  <span className="text-[10px] text-[#8A7A6E] font-normal">{round.items.length} items</span>
+                </div>
+                <div className="space-y-1.5">
+                  {round.items.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-xs">
+                      <div>
+                        <span className="font-bold text-[#241A14]">{item.quantity}x {item.name}</span>
+                        {item.specialInstructions && (
+                          <p className="text-[10px] text-[#E58A3A] italic">
+                            Note: "{item.specialInstructions}"
+                          </p>
+                        )}
+                      </div>
+                      <span className="font-bold text-[#5C3A21]">
+                        {formatCurrency(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {order.items.map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-bold text-[#241A14]">{item.quantity}x {item.name}</span>
+                  {item.specialInstructions && (
+                    <p className="text-[10px] text-[#E58A3A] italic">
+                      Note: "{item.specialInstructions}"
+                    </p>
+                  )}
+                </div>
+                <span className="font-bold text-[#5C3A21]">
+                  {formatCurrency(item.price * item.quantity)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="pt-3 border-t border-[#E8E0D5] flex justify-between font-extrabold text-sm">
-          <span>Total Bill:</span>
-          <span>{formatCurrency(order.total)}</span>
+          <span>Total Bill (incl. taxes):</span>
+          <span className="text-base text-[#5C3A21]">{formatCurrency(order.total)}</span>
         </div>
       </div>
 

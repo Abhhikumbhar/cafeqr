@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
 import ChaiMascotGreeting from '../../components/common/ChaiMascotGreeting';
@@ -29,6 +29,7 @@ export default function CustomerMenuPage() {
   const {
     tables,
     menuItems,
+    orders,
     settings,
     createOrder,
     getCustomerByPhone,
@@ -53,6 +54,11 @@ export default function CustomerMenuPage() {
   const currentTable = tables.find(t => t.name.toLowerCase() === detectedTableName.toLowerCase()) ||
                        tables.find(t => t.number === parseInt(tableNumberParsed, 10)) ||
                        tables[0] || { id: `T-${tableNumberParsed}`, name: detectedTableName, number: parseInt(tableNumberParsed, 10) };
+
+  // Running Table Order check
+  const runningTableOrder = orders?.find(
+    o => (o.tableId === currentTable.id || o.tableName?.toLowerCase() === currentTable.name?.toLowerCase()) && o.status !== 'Completed'
+  );
 
   // Active Category filter & search
   const [activeCategory, setActiveCategory] = useState('All');
@@ -256,6 +262,33 @@ export default function CustomerMenuPage() {
           <span>{currentTable.name} (Auto-Locked)</span>
         </div>
       </header>
+
+      {/* Running Table Active Check Banner */}
+      {runningTableOrder && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 text-xs shadow-xs animate-in slide-in-from-top-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="flex h-2.5 w-2.5 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-[#5C3A21] font-bold">
+                <span className="text-[#241A14] font-extrabold uppercase mr-1">Active Table Check:</span>
+                Order #{runningTableOrder.id} • Current Total: {formatCurrency(runningTableOrder.total)}
+              </p>
+              <p className="text-[10px] text-[#8A7A6E]">
+                Items added now will be dispatched to kitchen as <strong>Round {(runningTableOrder.rounds?.length || 1) + 1}</strong>!
+              </p>
+            </div>
+          </div>
+          <Link
+            to={`/track/${runningTableOrder.id}`}
+            className="shrink-0 px-3 py-1.5 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-[11px] font-bold shadow-xs transition-all"
+          >
+            Track Status
+          </Link>
+        </div>
+      )}
 
       {/* Hero Welcome Banner */}
       <div className="p-4 sm:p-6 max-w-3xl mx-auto w-full">
