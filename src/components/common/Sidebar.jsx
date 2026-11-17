@@ -23,7 +23,13 @@ export default function Sidebar({ mobileOpen, closeMobileSidebar }) {
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-    { to: '/admin/pos', label: 'POS & Billing', icon: Calculator, badge: null },
+    {
+      to: '/admin/pos',
+      label: 'POS & Billing',
+      icon: Calculator,
+      badge: stats.activeTablesCount > 0 ? `${stats.activeTablesCount} Active` : null,
+      badgeColor: 'bg-emerald-600 text-white'
+    },
     {
       to: '/admin/tables',
       label: 'Tables',

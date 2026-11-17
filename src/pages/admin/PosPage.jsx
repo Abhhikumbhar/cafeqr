@@ -94,7 +94,7 @@ export default function PosPage() {
       setAppliedCoupon(null);
       setDiscountAmount(0);
     }
-  }, [selectedTableId]);
+  }, [selectedTableId, existingOrderForTable?.id, existingOrderForTable?.items?.length]);
 
   // Lookup customer when phone number reaches 10 digits
   useEffect(() => {
