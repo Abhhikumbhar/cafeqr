@@ -63,6 +63,42 @@ export const CATEGORY_FALLBACKS = {
   Snacks: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&auto=format&fit=crop&q=80"
 };
 
+// Clean, parse, and unwrap image URLs (including Google Images redirects)
+export const sanitizeImageUrl = (rawUrl) => {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  let clean = rawUrl.trim().replace(/^["']|["']$/g, '');
+
+  if (!clean) return '';
+
+  // 1. If it's a data URL, return directly
+  if (clean.startsWith('data:image/')) {
+    return clean;
+  }
+
+  // 2. If it's a Google Images viewer redirect (google.com/imgres?imgurl=...)
+  try {
+    if (clean.includes('google.') && clean.includes('imgurl=')) {
+      const parsed = new URL(clean);
+      const direct = parsed.searchParams.get('imgurl');
+      if (direct) {
+        clean = decodeURIComponent(direct);
+      }
+    }
+  } catch {
+    const match = clean.match(/[?&]imgurl=([^&]+)/);
+    if (match && match[1]) {
+      clean = decodeURIComponent(match[1]);
+    }
+  }
+
+  // 3. Ensure valid web protocol
+  if (!clean.startsWith('http://') && !clean.startsWith('https://') && !clean.startsWith('data:') && !clean.startsWith('/')) {
+    clean = `https://${clean}`;
+  }
+
+  return clean;
+};
+
 // Smart fallback resolver that checks dish name keyword and category
 export const getItemFallbackImage = (item) => {
   const name = (typeof item === 'string' ? item : item?.name || '').toLowerCase();

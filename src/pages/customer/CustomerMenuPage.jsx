@@ -526,6 +526,7 @@ export default function CustomerMenuPage() {
                 src={item.image || getItemFallbackImage(item)}
                 alt={item.name}
                 loading="lazy"
+                referrerPolicy="no-referrer"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = getItemFallbackImage(item);
@@ -626,6 +627,7 @@ export default function CustomerMenuPage() {
             <img
               src={selectedItemForModal.image || getItemFallbackImage(selectedItemForModal)}
               alt={selectedItemForModal.name}
+              referrerPolicy="no-referrer"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = getItemFallbackImage(selectedItemForModal);

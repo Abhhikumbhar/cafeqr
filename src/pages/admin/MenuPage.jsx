@@ -4,7 +4,8 @@ import { formatCurrency } from '../../utils/formatters';
 import {
   CURATED_FOOD_IMAGES,
   getItemFallbackImage,
-  compressImageFile
+  compressImageFile,
+  sanitizeImageUrl
 } from '../../utils/imageFallbacks';
 import {
   BookOpen,
@@ -128,19 +129,20 @@ export default function MenuPage() {
     e.preventDefault();
     if (!formData.name || !formData.price) return;
 
-    const validatedImage = formData.image?.trim() || getItemFallbackImage(formData);
+    // Use the exact image URL entered by admin (sanitized for direct access)
+    const exactAdminImage = sanitizeImageUrl(formData.image) || getItemFallbackImage(formData);
 
     if (editingItem) {
       updateMenuItem(editingItem.id, {
         ...formData,
         price: Number(formData.price),
-        image: validatedImage
+        image: exactAdminImage
       });
     } else {
       addMenuItem({
         ...formData,
         price: Number(formData.price),
-        image: validatedImage
+        image: exactAdminImage
       });
     }
     setIsModalOpen(false);
@@ -220,6 +222,7 @@ export default function MenuPage() {
                   src={item.image || getItemFallbackImage(item)}
                   alt={item.name}
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
                     e.currentTarget.src = getItemFallbackImage(item);
@@ -419,6 +422,7 @@ export default function MenuPage() {
                     <img
                       src={formData.image || getItemFallbackImage(formData)}
                       alt="Dish preview"
+                      referrerPolicy="no-referrer"
                       onLoad={() => setImageLoadError(false)}
                       onError={() => setImageLoadError(true)}
                       className="w-full h-full object-cover"
@@ -430,7 +434,8 @@ export default function MenuPage() {
                       type="url"
                       value={formData.image}
                       onChange={(e) => {
-                        setFormData({ ...formData, image: e.target.value });
+                        const cleaned = sanitizeImageUrl(e.target.value);
+                        setFormData({ ...formData, image: cleaned });
                         setImageLoadError(false);
                       }}
                       placeholder="Paste image link (https://...)"

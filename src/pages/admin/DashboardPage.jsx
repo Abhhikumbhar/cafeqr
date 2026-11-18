@@ -427,6 +427,7 @@ export default function DashboardPage() {
                     <img
                       src={item.image || getItemFallbackImage(item)}
                       alt={item.name}
+                      referrerPolicy="no-referrer"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = getItemFallbackImage(item);
