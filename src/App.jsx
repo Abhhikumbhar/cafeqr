@@ -38,6 +38,7 @@ export default function App() {
             {/* Customer QR Self-Ordering Flows */}
             <Route path="/menu" element={<CustomerMenuPage />} />
             <Route path="/menu/tracking/:orderId" element={<CustomerOrderTrackingPage />} />
+            <Route path="/track/:orderId" element={<CustomerOrderTrackingPage />} />
 
             {/* Admin Management System (Protected) */}
             <Route path="/admin" element={<AdminLayout />}>

@@ -236,11 +236,16 @@ export function CafeProvider({ children }) {
     addToast(`🔔 New KOT #${order.kotNumber || order.id} for ${order.tableName}!`, 'success', 5000);
   };
 
-  // Handle incoming status change from Cloud
+  // Handle incoming status change from Cloud / Firestore / BroadcastChannel
   const handleIncomingStatus = (orderId, newStatus, tableId) => {
-    setOrders(prev =>
-      prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
+    setOrders(prev => {
+      const updated = prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o));
+      try {
+        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
     if (tableId) {
       if (newStatus === 'Completed' || newStatus === 'Available') {
         setTables(prev =>
@@ -250,6 +255,31 @@ export function CafeProvider({ children }) {
         setTables(prev =>
           prev.map(t => (t.id === tableId || t.name === tableId ? { ...t, status: newStatus, activeOrderId: orderId } : t))
         );
+      }
+    }
+
+    // Customer-facing celebratory acoustic chime & haptic feedback on mobile
+    const isCustomerView = typeof window !== 'undefined' && (
+      window.location.pathname.startsWith('/menu') ||
+      window.location.pathname.startsWith('/track')
+    );
+
+    if (isCustomerView) {
+      if (newStatus === 'Preparing') {
+        playChimeSound();
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+        }
+        addToast('👨‍🍳 Kitchen Accepted! Chef is preparing your order now!', 'success', 6000);
+      } else if (newStatus === 'Ready') {
+        playChimeSound();
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          try { navigator.vibrate([300, 150, 300]); } catch (e) {}
+        }
+        addToast('🛎️ Order Ready! Server is bringing dishes to your table!', 'success', 7000);
+      } else if (newStatus === 'Served') {
+        playChimeSound();
+        addToast('✨ Dishes Served! Enjoy your food at The 7 Cafe!', 'info', 5000);
       }
     }
   };
@@ -570,48 +600,53 @@ export function CafeProvider({ children }) {
   };
 
   const updateOrderStatus = (orderId, newStatus) => {
-    let affectedOrder = null;
+    const existingOrder = orders.find(ord => ord.id === orderId);
+    const tableId = existingOrder?.tableId;
+    const tableNumber = existingOrder?.tableNumber;
 
-    setOrders(prev =>
-      prev.map(ord => {
+    setOrders(prev => {
+      const updated = prev.map(ord => {
         if (ord.id === orderId) {
-          affectedOrder = { ...ord, status: newStatus };
-          return affectedOrder;
+          return { ...ord, status: newStatus };
         }
         return ord;
-      })
-    );
+      });
+      try {
+        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
 
     // Synchronize Table status accordingly
-    if (affectedOrder && affectedOrder.tableId) {
+    if (tableId) {
       if (newStatus === 'Preparing') {
-        updateTableStatus(affectedOrder.tableId, 'Preparing', orderId);
+        updateTableStatus(tableId, 'Preparing', orderId);
         playChimeSound();
         addToast(`Order #${orderId} moved to Kitchen Prep`, 'info');
       } else if (newStatus === 'Ready') {
-        updateTableStatus(affectedOrder.tableId, 'Ready', orderId);
+        updateTableStatus(tableId, 'Ready', orderId);
         playChimeSound();
         addToast(`Order #${orderId} is Ready for pickup!`, 'success');
       } else if (newStatus === 'Served') {
-        updateTableStatus(affectedOrder.tableId, 'Served', orderId);
+        updateTableStatus(tableId, 'Served', orderId);
         addToast(`Order #${orderId} has been Served`, 'info');
       } else if (newStatus === 'Billing') {
-        updateTableStatus(affectedOrder.tableId, 'Billing', orderId);
-        addToast(`Bill requested for Table #${affectedOrder.tableNumber}`, 'info');
+        updateTableStatus(tableId, 'Billing', orderId);
+        addToast(`Bill requested for Table #${tableNumber || ''}`, 'info');
       } else if (newStatus === 'Completed') {
         // Table resets to available when completed
-        resetTable(affectedOrder.tableId);
+        resetTable(tableId);
       }
     }
 
-    // Broadcast status change to Cloud and other open tabs
+    // Broadcast status change to Cloud, Firestore, and BroadcastChannel
     const channelName = getSyncChannel(settings);
-    publishStatusChangeToCloud(orderId, newStatus, affectedOrder?.tableId, channelName);
-    updateOrderStatusInFirestore(orderId, newStatus, affectedOrder?.tableId);
+    publishStatusChangeToCloud(orderId, newStatus, tableId, channelName);
+    updateOrderStatusInFirestore(orderId, newStatus, tableId);
     if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
       try {
         const bc = new BroadcastChannel('sairam_live_sync_channel');
-        bc.postMessage({ type: 'STATUS_CHANGED', orderId, newStatus, tableId: affectedOrder?.tableId });
+        bc.postMessage({ type: 'STATUS_CHANGED', orderId, newStatus, tableId });
         bc.close();
       } catch (e) {}
     }

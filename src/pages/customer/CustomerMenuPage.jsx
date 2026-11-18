@@ -272,29 +272,43 @@ export default function CustomerMenuPage() {
         </div>
       </header>
 
-      {/* Running Table Active Check Banner */}
+      {/* Running Table Active Check Banner with Live Kitchen State */}
       {runningTableOrder && (
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 text-xs shadow-xs animate-in slide-in-from-top-2">
+        <div className={`px-4 py-3 flex items-center justify-between gap-3 text-xs shadow-md border-b transition-all animate-in slide-in-from-top-2 ${
+          runningTableOrder.status === 'Preparing'
+            ? 'bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white border-orange-600'
+            : runningTableOrder.status === 'Ready'
+            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-700'
+            : 'bg-gradient-to-r from-amber-100 to-orange-100 text-[#5C3A21] border-amber-300'
+        }`}>
           <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex h-2.5 w-2.5 relative shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            <span className="flex h-3 w-3 relative shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
             </span>
             <div className="min-w-0">
-              <p className="truncate text-[#5C3A21] font-bold">
-                <span className="text-[#241A14] font-extrabold uppercase mr-1">Active Table Check:</span>
-                Order #{runningTableOrder.id} • Current Total: {formatCurrency(runningTableOrder.total)}
+              <p className="truncate font-extrabold text-xs">
+                {runningTableOrder.status === 'Preparing' && '🔥 Chef Accepted KOT: Brewing & Handcrafting Now (~8-12m)'}
+                {runningTableOrder.status === 'Ready' && '🛎️ Order Plated: Server is bringing dishes to your table!'}
+                {runningTableOrder.status === 'Order Pending' && '⏳ Order Sent to Kitchen: Waiting for chef to accept'}
+                {!['Preparing', 'Ready', 'Order Pending'].includes(runningTableOrder.status) && `Active Order #${runningTableOrder.id} • ${runningTableOrder.status}`}
               </p>
-              <p className="text-[10px] text-[#8A7A6E]">
-                Items added now will be dispatched to kitchen as <strong>Round {(runningTableOrder.rounds?.length || 1) + 1}</strong>!
+              <p className={`text-[10px] truncate ${
+                runningTableOrder.status === 'Preparing' || runningTableOrder.status === 'Ready' ? 'text-white/90' : 'text-[#8A7A6E]'
+              }`}>
+                {runningTableOrder.items?.map(it => `${it.quantity}x ${it.name}`).join(', ')}
               </p>
             </div>
           </div>
           <Link
             to={`/track/${runningTableOrder.id}`}
-            className="shrink-0 px-3 py-1.5 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-[11px] font-bold shadow-xs transition-all"
+            className={`shrink-0 px-3.5 py-1.5 rounded-xl font-black text-xs shadow-sm transition-all transform active:scale-95 ${
+              runningTableOrder.status === 'Preparing' || runningTableOrder.status === 'Ready'
+                ? 'bg-white text-[#5C3A21] hover:bg-amber-100'
+                : 'bg-[#5C3A21] text-white hover:bg-[#4B2E19]'
+            }`}
           >
-            Track Status
+            Track Live →
           </Link>
         </div>
       )}

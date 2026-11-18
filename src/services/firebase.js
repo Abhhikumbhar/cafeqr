@@ -6,6 +6,7 @@ import {
   collection,
   doc,
   setDoc,
+  getDoc,
   updateDoc,
   onSnapshot,
   query,
@@ -103,5 +104,44 @@ export function subscribeToFirestoreOrders(onNewOrUpdatedOrder) {
   } catch (err) {
     console.warn("Firestore subscription error:", err);
     return () => {};
+  }
+}
+
+// Helper: Real-time listener for a single customer order by ID
+export function subscribeToSingleOrder(orderId, onOrderUpdate) {
+  if (!db || !orderId) return () => {};
+  try {
+    const orderRef = doc(db, "orders", orderId);
+    const unsubscribe = onSnapshot(
+      orderRef,
+      (snapshot) => {
+        if (snapshot.exists() && onOrderUpdate) {
+          onOrderUpdate(snapshot.data());
+        }
+      },
+      (error) => {
+        console.warn("Firestore single order listener notice:", error.message);
+      }
+    );
+    return unsubscribe;
+  } catch (err) {
+    console.warn("Firestore subscribeToSingleOrder error:", err);
+    return () => {};
+  }
+}
+
+// Helper: One-time fetch for single order
+export async function fetchOrderFromFirestore(orderId) {
+  if (!db || !orderId) return null;
+  try {
+    const orderRef = doc(db, "orders", orderId);
+    const snapshot = await getDoc(orderRef);
+    if (snapshot.exists()) {
+      return snapshot.data();
+    }
+    return null;
+  } catch (err) {
+    console.warn("Firestore fetchOrder notice:", err);
+    return null;
   }
 }

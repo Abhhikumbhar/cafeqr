@@ -75,8 +75,17 @@ export function subscribeToCloudEvents(channelName = DEFAULT_SYNC_CHANNEL, onMes
       if (!isSubscribed) return;
       try {
         const raw = JSON.parse(event.data);
-        if (raw && raw.message) {
-          const parsed = JSON.parse(raw.message);
+        if (raw) {
+          let parsed = null;
+          if (typeof raw.message === 'string') {
+            try {
+              parsed = JSON.parse(raw.message);
+            } catch (_) {}
+          } else if (typeof raw.message === 'object' && raw.message !== null) {
+            parsed = raw.message;
+          } else if (raw.type) {
+            parsed = raw;
+          }
           if (parsed && parsed.type) {
             onMessageCallback(parsed);
           }
