@@ -13,6 +13,7 @@ import {
   Phone,
   Mail,
   Percent,
+  QrCode,
   CheckCircle2
 } from 'lucide-react';
 
@@ -134,6 +135,52 @@ export default function SettingsPage() {
                 name="gstNumber"
                 value={form.gstNumber}
                 onChange={handleChange}
+                className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* UPI QR Payment Setup (0% Commission) */}
+        <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-emerald-600" />
+              UPI QR Scan & Pay (0% Gateway Commission)
+            </h3>
+            <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Direct Bank Settlement
+            </span>
+          </div>
+          <p className="text-xs text-[#8A7A6E]">
+            All thermal receipts and POS checkout popups will generate a live UPI QR code linked directly to your cafe bank account with zero third-party gateway deductions.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Cafe UPI VPA / ID * (PhonePe / GPay / Bank UPI)
+              </label>
+              <input
+                type="text"
+                name="upiId"
+                value={form.upiId || 'the7cafe@okhdfcbank'}
+                onChange={handleChange}
+                placeholder="e.g. the7cafe@okhdfcbank or 9876543210@ybl"
+                className="w-full text-xs font-bold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14] font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#665A4F] block mb-1">
+                Payee Business Name (Shown in GPay / PhonePe)
+              </label>
+              <input
+                type="text"
+                name="upiPayeeName"
+                value={form.upiPayeeName || form.cafeName || 'The 7 Cafe'}
+                onChange={handleChange}
+                placeholder="The 7 Cafe"
                 className="w-full text-xs font-semibold py-2.5 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
               />
             </div>

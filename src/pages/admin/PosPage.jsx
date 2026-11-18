@@ -6,6 +6,7 @@ import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
 import CashRegisterModal from '../../components/admin/CashRegisterModal';
 import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
 import { getItemFallbackImage } from '../../utils/imageFallbacks';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Calculator,
   Search,
@@ -776,17 +777,27 @@ export default function PosPage() {
               })}
             </div>
 
-            {/* Simulated UPI QR / Cash note */}
+            {/* Dynamic UPI Scan & Pay QR Code */}
             {selectedPaymentMethod === 'UPI' && (
-              <div className="bg-[#FAF7F2] p-4 rounded-2xl border border-[#E8E0D5] text-center mb-5">
-                <p className="text-xs font-semibold text-[#241A14] mb-2">
-                  Scan Cafe UPI Dynamic QR
+              <div className="bg-[#FAF7F2] p-4 rounded-3xl border border-[#E8E0D5] text-center mb-5 space-y-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                  Instant UPI Scan & Pay (0% Fee)
+                </span>
+                <p className="text-xs font-extrabold text-[#241A14]">
+                  Scan to Pay {formatCurrency(finalTotal)}
                 </p>
-                <div className="w-32 h-32 mx-auto bg-white p-2 rounded-xl border border-[#E8E0D5] flex items-center justify-center">
-                  <QrCode className="w-24 h-24 text-[#241A14]" />
+                <div className="w-36 h-36 mx-auto bg-white p-2.5 rounded-2xl border border-[#E8E0D5] flex items-center justify-center shadow-xs">
+                  <QRCodeSVG
+                    value={`upi://pay?pa=${encodeURIComponent(settings?.upiId || 'the7cafe@okhdfcbank')}&pn=${encodeURIComponent(settings?.cafeName || 'The 7 Cafe')}&am=${finalTotal}&cu=INR&tn=Bill-${currentTable?.name || 'POS'}`}
+                    size={120}
+                    level="M"
+                  />
                 </div>
-                <p className="text-[10px] text-[#8A7A6E] mt-2 font-mono">
-                  UPI ID: the7cafe@okhdfcbank
+                <p className="text-[11px] font-bold text-[#5C3A21]">
+                  PhonePe • Google Pay • Paytm • Any UPI App
+                </p>
+                <p className="text-[10px] text-[#8A7A6E] font-mono">
+                  UPI VPA: {settings?.upiId || 'the7cafe@okhdfcbank'}
                 </p>
               </div>
             )}

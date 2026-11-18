@@ -7,6 +7,8 @@ export const INITIAL_SETTINGS = {
   email: "contact@the7cafe.com",
   gstNumber: "27AAAAA0000A1Z5",
   gstPercentage: 5,
+  upiId: "the7cafe@okhdfcbank",
+  upiPayeeName: "The 7 Cafe",
   tableCount: 10,
   currency: "₹",
   voiceEnabled: true,

@@ -67,7 +67,8 @@ export default function ThermalReceiptModal({
   };
 
   // UPI payment QR string
-  const upiQrString = `upi://pay?pa=the7cafe@okhdfcbank&pn=${encodeURIComponent(cafeName)}&am=${order.total}&cu=INR&tn=Bill-${order.id}`;
+  const cafeUpiId = settings?.upiId || 'the7cafe@okhdfcbank';
+  const upiQrString = `upi://pay?pa=${encodeURIComponent(cafeUpiId)}&pn=${encodeURIComponent(cafeName)}&am=${order.total}&cu=INR&tn=Bill-${order.id}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">

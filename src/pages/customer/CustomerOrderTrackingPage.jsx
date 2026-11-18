@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Coffee,
   CheckCircle2,
@@ -12,12 +13,13 @@ import {
   BellRing,
   ArrowLeft,
   Sparkles,
-  ShoppingBag
+  ShoppingBag,
+  QrCode
 } from 'lucide-react';
 
 export default function CustomerOrderTrackingPage() {
   const { orderId } = useParams();
-  const { orders, updateOrderStatus, getCustomerByPhone, addToast } = useCafe();
+  const { orders, updateOrderStatus, getCustomerByPhone, settings, addToast } = useCafe();
 
   // Find order
   const order = orders.find(o => o.id === orderId) || orders[0];
@@ -218,6 +220,47 @@ export default function CustomerOrderTrackingPage() {
       <LoyaltyPunchCard
         customer={matchedCustomer || { name: order.customerName, visitCount: 1 }}
       />
+
+      {/* Dynamic UPI Scan & Pay at Table (0% Gateway Commission) */}
+      {order.status === 'Billing' && (
+        <div className="bg-gradient-to-br from-[#FFFDF9] via-white to-[#FAF4EB] p-5 rounded-3xl border-2 border-emerald-400 shadow-md text-center space-y-3 animate-in zoom-in-95">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider border border-emerald-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span>Instant UPI Scan & Pay (₹0 Commission)</span>
+          </div>
+
+          <div>
+            <h4 className="text-base font-black text-[#241A14]">
+              Pay {formatCurrency(order.total)} from Table
+            </h4>
+            <p className="text-xs text-[#8A7A6E]">
+              Scan with PhonePe, Google Pay, Paytm or tap button below
+            </p>
+          </div>
+
+          {/* Dynamic UPI QR Code */}
+          <div className="w-40 h-40 mx-auto bg-white p-2.5 rounded-2xl border border-[#E8E0D5] flex items-center justify-center shadow-xs">
+            <QRCodeSVG
+              value={`upi://pay?pa=${encodeURIComponent(settings?.upiId || 'the7cafe@okhdfcbank')}&pn=${encodeURIComponent(settings?.cafeName || 'The 7 Cafe')}&am=${order.total}&cu=INR&tn=Table-${order.tableName}`}
+              size={135}
+              level="M"
+            />
+          </div>
+
+          {/* 1-Click Mobile Intent Button */}
+          <a
+            href={`upi://pay?pa=${encodeURIComponent(settings?.upiId || 'the7cafe@okhdfcbank')}&pn=${encodeURIComponent(settings?.cafeName || 'The 7 Cafe')}&am=${order.total}&cu=INR&tn=Table-${order.tableName}`}
+            className="w-full py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md shadow-emerald-600/30 flex items-center justify-center gap-2 transition-all block text-center"
+          >
+            <QrCode className="w-4 h-4" />
+            <span>Open PhonePe / GPay / Paytm to Pay</span>
+          </a>
+
+          <p className="text-[10px] text-[#8A7A6E] font-mono">
+            Direct Bank UPI: {settings?.upiId || 'the7cafe@okhdfcbank'}
+          </p>
+        </div>
+      )}
 
       {/* Service Action Buttons */}
       <div className="grid grid-cols-2 gap-3 pt-2">
