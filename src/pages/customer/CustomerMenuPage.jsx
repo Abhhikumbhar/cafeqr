@@ -76,6 +76,9 @@ export default function CustomerMenuPage() {
   // Lucky Spin Wheel Modal
   const [isLuckySpinOpen, setIsLuckySpinOpen] = useState(false);
 
+  // VIP Loyalty Pass Modal
+  const [isVipPassOpen, setIsVipPassOpen] = useState(false);
+
   // Cart state
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -332,79 +335,104 @@ export default function CustomerMenuPage() {
         </div>
       </div>
 
-      {/* Build Your Own Pizza Interactive Banner (Instagram Reel Style) */}
+      {/* Aesthetic Cafe Story Highlights (Instagram Story Rings) */}
       <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full mb-3 -mt-1">
-        <div
-          onClick={() => setIsPizzaBuilderOpen(true)}
-          className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-[#FFF6EC] via-[#FDF1E3] to-[#FCE8D3] border-2 border-[#F3CFA8] shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-between group overflow-hidden relative active:scale-[0.99]"
-        >
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#E58A3A] to-[#B85714] flex items-center justify-center text-2xl shadow-md transform group-hover:scale-110 group-hover:rotate-6 transition-all shrink-0">
-              🍕
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-100 border border-orange-300 text-orange-800 text-[10px] font-extrabold uppercase mb-0.5">
-                <Sparkles className="w-3 h-3 text-orange-600" />
-                <span>Live Interactive Pizza Builder</span>
+        <div className="flex items-center gap-3.5 sm:gap-6 overflow-x-auto pb-2 pt-1 scrollbar-none justify-between sm:justify-center">
+          {/* Story 1: Custom Pizza Builder */}
+          <button
+            onClick={() => setIsPizzaBuilderOpen(true)}
+            className="flex flex-col items-center gap-1 shrink-0 group cursor-pointer focus:outline-none transition-transform active:scale-95"
+          >
+            <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-[#E58A3A] shadow-md group-hover:scale-105 transition-all relative">
+              <div className="p-0.5 rounded-full bg-[#FAF7F2]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#FFF6EC] to-[#FCE8D3] flex items-center justify-center text-2xl shadow-inner relative overflow-hidden">
+                  <span className="transform group-hover:scale-115 transition-transform duration-300">
+                    🍕
+                  </span>
+                  <span className="absolute top-1 right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
+                  </span>
+                </div>
               </div>
-              <h3 className="text-xs sm:text-sm font-black text-[#241A14] flex items-center gap-1.5">
-                <span>Build Your Own Pizza</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-rose-500 text-white font-extrabold uppercase animate-pulse">
-                  Hot
-                </span>
-              </h3>
-              <p className="text-[10px] sm:text-[11px] text-[#665A4F] line-clamp-1">
-                Choose crust, sauces & watch toppings drop live on your pizza!
-              </p>
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[8px] font-black uppercase tracking-tight text-white bg-rose-500 shadow-xs border border-white/80">
+                Craft
+              </span>
             </div>
-          </div>
-
-          <div className="relative z-10 shrink-0 pl-2">
-            <span className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-[#5C3A21] group-hover:bg-[#4B2E19] text-white text-[11px] sm:text-xs font-black shadow-md flex items-center gap-1 transition-all">
-              <span>Build</span>
-              <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold text-[#3B281B] group-hover:text-[#E58A3A] transition-colors tracking-tight text-center max-w-[68px] leading-tight">
+              Build Pizza
             </span>
-          </div>
+          </button>
 
-          {/* Background decorative glow */}
-          <div className="absolute right-[-15px] top-[-15px] w-28 h-28 rounded-full bg-amber-400/10 pointer-events-none group-hover:scale-125 transition-transform" />
-        </div>
-      </div>
-
-      {/* Lucky Spin the Wheel & 5-Visit Rewards Banner */}
-      <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full mb-3">
-        <div
-          onClick={() => setIsLuckySpinOpen(true)}
-          className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-[#241A14] via-[#3B281B] to-[#5C3A21] border-2 border-amber-400 text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-between group overflow-hidden relative active:scale-[0.99]"
-        >
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-[#D4AF37] text-[#241A14] flex items-center justify-center text-2xl shadow-md transform group-hover:rotate-45 transition-transform shrink-0">
-              🎰
-            </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-extrabold uppercase mb-0.5">
-                <Sparkles className="w-3 h-3 text-amber-300 animate-spin" />
-                <span>Daily Table Treat & Loyalty</span>
+          {/* Story 2: Lucky Spin the Wheel */}
+          <button
+            onClick={() => setIsLuckySpinOpen(true)}
+            className="flex flex-col items-center gap-1 shrink-0 group cursor-pointer focus:outline-none transition-transform active:scale-95"
+          >
+            <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-500 via-amber-400 to-[#5C3A21] shadow-md group-hover:scale-105 transition-all relative">
+              <div className="p-0.5 rounded-full bg-[#FAF7F2]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] flex items-center justify-center text-2xl shadow-inner relative overflow-hidden">
+                  <span className="transform group-hover:rotate-45 transition-transform duration-300">
+                    🎰
+                  </span>
+                  <span className="absolute top-1 right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                </div>
               </div>
-              <h3 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
-                <span>Spin Lucky Wheel & Win Free Treat!</span>
-                <span className="text-amber-300 text-[10px] font-mono">100% Free</span>
-              </h3>
-              <p className="text-[11px] text-amber-100/80">
-                Win Free Kadak Chai, French Fries, or Flat ₹50 OFF. Plus earn 5-Visit VIP Stamps!
-              </p>
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[8px] font-black uppercase tracking-tight text-white bg-emerald-600 shadow-xs border border-white/80">
+                Free Treat
+              </span>
             </div>
-          </div>
+            <span className="text-[11px] font-bold text-[#3B281B] group-hover:text-[#E58A3A] transition-colors tracking-tight text-center max-w-[68px] leading-tight">
+              Lucky Spin
+            </span>
+          </button>
 
-          <div className="relative z-10 shrink-0">
-            <button className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#241A14] font-black text-xs shadow-md group-hover:scale-105 transition-all flex items-center gap-1">
-              <span>Spin Now</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          {/* Story 3: 5-Visit VIP Pass */}
+          <button
+            onClick={() => setIsVipPassOpen(true)}
+            className="flex flex-col items-center gap-1 shrink-0 group cursor-pointer focus:outline-none transition-transform active:scale-95"
+          >
+            <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-[#D4AF37] via-amber-500 to-[#3B281B] shadow-md group-hover:scale-105 transition-all relative">
+              <div className="p-0.5 rounded-full bg-[#FAF7F2]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#FAF3E8] to-[#F5E6CE] flex items-center justify-center text-2xl shadow-inner relative overflow-hidden">
+                  <span className="transform group-hover:scale-115 transition-transform duration-300">
+                    ☕
+                  </span>
+                </div>
+              </div>
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[8px] font-black uppercase tracking-tight text-white bg-[#5C3A21] shadow-xs border border-white/80">
+                5 Visits
+              </span>
+            </div>
+            <span className="text-[11px] font-bold text-[#3B281B] group-hover:text-[#E58A3A] transition-colors tracking-tight text-center max-w-[68px] leading-tight">
+              VIP Pass
+            </span>
+          </button>
 
-          {/* Decorative wheel background shimmer */}
-          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-amber-400/10 pointer-events-none" />
+          {/* Story 4: Our Couple Story / Cafe Vibe */}
+          <button
+            onClick={() => setShowMascotGreeting(true)}
+            className="flex flex-col items-center gap-1 shrink-0 group cursor-pointer focus:outline-none transition-transform active:scale-95"
+          >
+            <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-rose-400 via-amber-300 to-purple-400 shadow-md group-hover:scale-105 transition-all relative">
+              <div className="p-0.5 rounded-full bg-[#FAF7F2]">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#FDF2F8] to-[#FCE7F3] flex items-center justify-center text-2xl shadow-inner relative overflow-hidden">
+                  <span className="transform group-hover:scale-115 transition-transform duration-300">
+                    💑
+                  </span>
+                </div>
+              </div>
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.2 rounded-full text-[8px] font-black uppercase tracking-tight text-white bg-purple-600 shadow-xs border border-white/80">
+                Vibe
+              </span>
+            </div>
+            <span className="text-[11px] font-bold text-[#3B281B] group-hover:text-[#E58A3A] transition-colors tracking-tight text-center max-w-[68px] leading-tight">
+              Our Vibe
+            </span>
+          </button>
         </div>
       </div>
 
@@ -821,16 +849,54 @@ export default function CustomerMenuPage() {
         }}
       />
 
-      {/* Floating Lucky Spin Button for Instant Table Engagement */}
-      <button
-        onClick={() => setIsLuckySpinOpen(true)}
-        className="fixed bottom-20 left-4 z-40 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-[#241A14] to-[#5C3A21] text-amber-300 font-black text-xs shadow-xl border-2 border-amber-400 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all cursor-pointer animate-bounce"
-        style={{ animationDuration: '3s' }}
-        title="Spin the Lucky Wheel"
-      >
-        <span className="text-base">🎰</span>
-        <span>Lucky Spin & Win</span>
-      </button>
+      {/* Dedicated 5-Visit VIP Punch Card Modal */}
+      {isVipPassOpen && (
+        <div className="fixed inset-0 z-50 bg-[#241A14]/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border-2 border-[#EADCCB] relative">
+            <button
+              onClick={() => setIsVipPassOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FAF5EE] text-[#665A4F] flex items-center justify-center font-bold text-sm"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="text-center mb-4">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#5C3A21] bg-amber-100 px-3 py-1 rounded-full border border-amber-300">
+                The 7 Cafe VIP Club
+              </span>
+              <h3 className="text-xl font-black text-[#241A14] mt-1.5">
+                5-Visit Loyalty Pass
+              </h3>
+              <p className="text-xs text-[#8A7A6E]">
+                Enter your mobile number to check your stamps and unlock free drinks!
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <div className="relative">
+                <Phone className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8A7A6E]" />
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  placeholder="Enter 10-digit mobile number"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF7F2] border border-[#E8E0D5] text-xs font-bold text-[#241A14] focus:outline-none focus:ring-2 focus:ring-[#5C3A21]"
+                />
+              </div>
+            </div>
+
+            <LoyaltyPunchCard
+              customer={identifiedCustomer || (customerPhone ? { name: customerName, visitCount: 0 } : null)}
+              onApplyCoupon={(code) => {
+                handleApplyCoupon(code);
+                setIsVipPassOpen(false);
+                setIsCartOpen(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Lucky Spin Wheel Interactive Modal */}
       <LuckySpinWheelModal
