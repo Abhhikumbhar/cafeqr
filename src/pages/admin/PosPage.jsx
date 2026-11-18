@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
@@ -67,6 +68,15 @@ export default function PosPage() {
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [lastCompletedOrder, setLastCompletedOrder] = useState(null);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  // Pre-fill phone if provided via Quick Lookup URL
+  useEffect(() => {
+    const urlPhone = searchParams.get('phone');
+    if (urlPhone) {
+      setCustomerPhone(urlPhone);
+    }
+  }, [searchParams]);
 
   const categories = [
     'All',
@@ -487,9 +497,92 @@ export default function PosPage() {
               />
             </div>
 
-            {/* Identified Customer Perks / 5-Visit Punch Card */}
+            {/* Identified Customer Perks / 1-Click Fast Loyalty Action */}
             {identifiedCustomer && (
-              <div className="pt-2">
+              <div className="pt-1.5 space-y-2">
+                {/* 1-Click Auto Reward Bar */}
+                <div className="p-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-[#E58A3A] space-y-1.5 shadow-2xs">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-[#5C3A21] text-amber-300 flex items-center justify-center text-[10px] font-black">
+                        #{identifiedCustomer.totalVisits || 1}
+                      </span>
+                      <div>
+                        <span className="text-xs font-black text-[#241A14]">
+                          {identifiedCustomer.name}
+                        </span>
+                        <span className="text-[10px] text-amber-800 font-bold ml-1.5">
+                          ({identifiedCustomer.loyaltyPoints || 0} pts)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* 5-Stamp mini pills */}
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((st) => {
+                        const v = identifiedCustomer.totalVisits || 1;
+                        const filled = st <= (v % 5 === 0 ? 5 : v % 5) || v >= 5;
+                        return (
+                          <span
+                            key={st}
+                            className={`w-4 h-4 rounded-full text-[9px] font-black flex items-center justify-center ${
+                              filled
+                                ? 'bg-emerald-600 text-white shadow-2xs'
+                                : 'bg-[#E8E0D5] text-[#8A7A6E]'
+                            }`}
+                          >
+                            {filled ? '✓' : st}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 1-Click Coupon Apply or Applied Badge */}
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between p-1.5 rounded-lg bg-emerald-100/90 text-emerald-900 border border-emerald-300 text-xs font-extrabold">
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>{appliedCoupon.code} Applied (-{formatCurrency(discountAmount)})</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAppliedCoupon(null);
+                          setDiscountAmount(0);
+                        }}
+                        className="text-rose-700 hover:text-rose-900 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded hover:bg-rose-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : identifiedCustomer.availableCoupons?.length > 0 ? (
+                    <div className="flex flex-col gap-1 pt-0.5">
+                      {identifiedCustomer.availableCoupons.map((c, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleApplyCoupon(c.code)}
+                          className="w-full py-1.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-[11px] font-black flex items-center justify-between shadow-sm active:scale-95 transition-all"
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: '4s' }} />
+                            <span>1-Click Apply: {c.title || c.code}</span>
+                          </span>
+                          <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">
+                            APPLY ➔
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] text-amber-900 font-medium">
+                      ⭐ Visit #{identifiedCustomer.totalVisits || 1} Active! {5 - ((identifiedCustomer.totalVisits || 1) % 5 || 5)} visits to VIP ₹50 OFF reward.
+                    </p>
+                  )}
+                </div>
+
+                {/* Compact Stamp Card Accordion / View */}
                 <LoyaltyPunchCard
                   customer={identifiedCustomer}
                   onApplyCoupon={handleApplyCoupon}

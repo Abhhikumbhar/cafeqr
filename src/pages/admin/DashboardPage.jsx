@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime, STATUS_COLORS } from '../../utils/formatters';
 import { getItemFallbackImage } from '../../utils/imageFallbacks';
+import QuickLoyaltyLookupModal from '../../components/common/QuickLoyaltyLookupModal';
 import {
   IndianRupee,
   ShoppingBag,
@@ -18,12 +19,16 @@ import {
   Eye,
   ChevronRight,
   Coffee,
-  Check
+  Check,
+  Award,
+  Phone,
+  ArrowRight
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { stats, orders, tables, menuItems, settings, updateOrderStatus } = useCafe();
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isLoyaltyLookupOpen, setIsLoyaltyLookupOpen] = useState(false);
 
   // Recent 6 orders
   const recentOrders = orders.slice(0, 6);
@@ -102,12 +107,41 @@ export default function DashboardPage() {
             className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all backdrop-blur-sm"
           >
             <Grid3X3 className="w-4 h-4" />
-            <span>Manage 12 Tables</span>
+            <span>Manage {tables.length || 10} Tables</span>
           </Link>
         </div>
 
         {/* Decorative background coffee bean circles */}
         <div className="absolute right-[-40px] bottom-[-40px] w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
+      </div>
+
+      {/* Quick 1-Second Guest Loyalty Search Strip (Admin Fast Flow) */}
+      <div className="bg-gradient-to-r from-amber-50/95 via-orange-50/80 to-white rounded-2xl p-4 border border-amber-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#5C3A21] text-amber-300 flex items-center justify-center shrink-0 shadow-sm">
+            <Award className="w-5 h-5 text-amber-300" />
+          </div>
+          <div>
+            <h4 className="text-xs font-black text-[#241A14] flex items-center gap-1.5">
+              <span>Quick Customer Loyalty & Stamps Check</span>
+              <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">
+                1-Second Fast Lookup
+              </span>
+            </h4>
+            <p className="text-[11px] text-[#8A7A6E]">
+              Guest asks about their VIP stamps or points at counter? Enter their mobile to verify instantly.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setIsLoyaltyLookupOpen(true)}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#5C3A21] hover:bg-[#4B2E19] text-white text-xs font-extrabold shadow-sm transition-all active:scale-95 shrink-0"
+        >
+          <Phone className="w-3.5 h-3.5 text-amber-300" />
+          <span>Check Guest Mobile Number</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Primary KPI Stats Cards */}
@@ -591,6 +625,12 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Quick Loyalty Lookup Modal */}
+      <QuickLoyaltyLookupModal
+        isOpen={isLoyaltyLookupOpen}
+        onClose={() => setIsLoyaltyLookupOpen(false)}
+      />
     </div>
   );
 }

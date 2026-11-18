@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { useAuth } from '../../context/AuthContext';
 import { formatCurrency, formatTimeAgo } from '../../utils/formatters';
+import QuickLoyaltyLookupModal from './QuickLoyaltyLookupModal';
 import {
   Volume2,
   VolumeX,
@@ -19,7 +20,8 @@ import {
   X,
   ArrowRight,
   Clock,
-  Eye
+  Eye,
+  Award
 } from 'lucide-react';
 
 export default function Header({ toggleMobileSidebar }) {
@@ -29,6 +31,7 @@ export default function Header({ toggleMobileSidebar }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [dismissedOrderId, setDismissedOrderId] = useState(null);
+  const [isLoyaltyLookupOpen, setIsLoyaltyLookupOpen] = useState(false);
 
   // Active orders awaiting kitchen / billing
   const activeOrders = orders.filter(
@@ -255,6 +258,16 @@ export default function Header({ toggleMobileSidebar }) {
             <span>Kitchen KDS</span>
           </Link>
 
+          {/* Quick Loyalty Lookup Button */}
+          <button
+            onClick={() => setIsLoyaltyLookupOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-[#5C3A21] border border-amber-300 rounded-xl text-xs font-bold transition-all shadow-xs"
+            title="Instant 1-Second Guest Loyalty & Stamps Lookup"
+          >
+            <Award className="w-3.5 h-3.5 text-[#E58A3A]" />
+            <span className="hidden sm:inline">Check Loyalty</span>
+          </button>
+
           {/* POS Quick Button */}
           <Link
             to="/admin/pos"
@@ -331,6 +344,12 @@ export default function Header({ toggleMobileSidebar }) {
           </div>
         </div>
       </header>
+
+      {/* Quick Loyalty Lookup Modal */}
+      <QuickLoyaltyLookupModal
+        isOpen={isLoyaltyLookupOpen}
+        onClose={() => setIsLoyaltyLookupOpen(false)}
+      />
     </div>
   );
 }

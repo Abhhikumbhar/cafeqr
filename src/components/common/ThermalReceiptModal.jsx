@@ -8,8 +8,10 @@ import {
   Coffee,
   IndianRupee,
   Clock,
-  UtensilsCrossed
+  UtensilsCrossed,
+  Award
 } from 'lucide-react';
+import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 
 export default function ThermalReceiptModal({
@@ -21,9 +23,16 @@ export default function ThermalReceiptModal({
 }) {
   if (!isOpen || !order) return null;
 
+  const { getCustomerByPhone } = useCafe();
   const isKot = type === 'kot';
   const cafeName = settings.cafeName || 'The 7 Cafe';
   const phone = order.customerPhone || '';
+
+  // Get customer loyalty status for receipt
+  const customer = order.customerPhone && getCustomerByPhone ? getCustomerByPhone(order.customerPhone) : null;
+  const visits = customer ? (customer.totalVisits || 1) : 1;
+  const currentStamp = visits % 5 === 0 ? 5 : visits % 5;
+  const stampsVisual = [1, 2, 3, 4, 5].map(s => s <= currentStamp ? '✓' : '○').join(' ');
 
   // Generate WhatsApp message content
   const handleShareWhatsApp = () => {
@@ -40,7 +49,9 @@ export default function ThermalReceiptModal({
       `Subtotal: ${formatCurrency(order.subtotal)}\n` +
       `GST (${settings.gstPercentage || 5}%): ${formatCurrency(order.gst)}\n` +
       (order.discount ? `Discount: -${formatCurrency(order.discount)}\n` : '') +
-      `*Total Paid: ${formatCurrency(order.total)}* (${order.paymentMethod || 'UPI'})\n\n` +
+      `*Total Paid: ${formatCurrency(order.total)}* (${order.paymentMethod || 'UPI'})\n` +
+      (order.customerPhone ? `--------------------------------\n★ VIP STAMPS: [ ${stampsVisual} ] (${visits}/5 Visits) ★\n` : '') +
+      `--------------------------------\n` +
       `Thank you for visiting ${cafeName}! Visit again. ✨`;
 
     const cleanPhone = phone.replace(/\D/g, '');
@@ -218,6 +229,28 @@ export default function ThermalReceiptModal({
                     <span className="uppercase">{order.paymentMethod || 'UPI / Cash'}</span>
                   </div>
                 </div>
+
+                {/* VIP Customer Loyalty Stamps Box on Receipt */}
+                {(order.customerPhone || order.customerName) && (
+                  <div className="border border-black border-dashed p-1.5 rounded text-center my-2 text-[9px] space-y-0.5">
+                    <p className="font-black tracking-wider uppercase text-[10px] text-gray-900">
+                      ★ THE 7 CAFE VIP REWARDS ★
+                    </p>
+                    <div className="flex justify-between text-[8px] font-bold text-gray-700">
+                      <span>Guest: {order.customerName || 'Valued Guest'}</span>
+                      <span>{order.customerPhone ? `+91 ${order.customerPhone.slice(-10)}` : ''}</span>
+                    </div>
+                    <div className="font-mono text-xs font-black tracking-widest py-0.5 text-black">
+                      {[1, 2, 3, 4, 5].map(s => s <= currentStamp ? '[✓]' : '[ ]').join(' ')}
+                    </div>
+                    <p className="text-[8px] font-bold text-gray-800">
+                      {visits >= 5
+                        ? '🎉 5th Visit Completed! VIP ₹50 OFF Unlocked.'
+                        : `Visit #${visits} Stamped! ${5 - (visits % 5 || 5)} more visits for ₹50 OFF!`
+                      }
+                    </p>
+                  </div>
+                )}
 
                 {/* Bottom UPI QR for scan & pay */}
                 <div className="text-center pt-3 space-y-1.5 flex flex-col items-center">
