@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
+import {
+  CURATED_FOOD_IMAGES,
+  getItemFallbackImage,
+  compressImageFile
+} from '../../utils/imageFallbacks';
 import {
   BookOpen,
   Plus,
@@ -13,7 +18,11 @@ import {
   ToggleLeft,
   ToggleRight,
   Flame,
-  Leaf
+  Leaf,
+  Upload,
+  Image as ImageIcon,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 
 export default function MenuPage() {
@@ -22,6 +31,8 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const fileInputRef = useRef(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   // Form state for Add/Edit
   const [formData, setFormData] = useState({
@@ -55,9 +66,21 @@ export default function MenuPage() {
     Pizza: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=600&auto=format&fit=crop&q=80",
     Burger: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80",
     Sandwich: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&auto=format&fit=crop&q=80",
-    "Cold Drinks": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80",
+    "Cold Drinks": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&auto=format&fit=crop&q=80",
     Desserts: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&auto=format&fit=crop&q=80",
     Snacks: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&auto=format&fit=crop&q=80"
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const base64 = await compressImageFile(file);
+      setFormData(prev => ({ ...prev, image: base64 }));
+      setImageLoadError(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const filteredItems = menuItems.filter(item => {
@@ -69,6 +92,7 @@ export default function MenuPage() {
 
   const handleOpenAdd = () => {
     setEditingItem(null);
+    setImageLoadError(false);
     setFormData({
       name: '',
       category: 'Coffee',
@@ -85,6 +109,7 @@ export default function MenuPage() {
 
   const handleOpenEdit = (item) => {
     setEditingItem(item);
+    setImageLoadError(false);
     setFormData({
       name: item.name,
       category: item.category,
@@ -103,16 +128,19 @@ export default function MenuPage() {
     e.preventDefault();
     if (!formData.name || !formData.price) return;
 
+    const validatedImage = formData.image?.trim() || getItemFallbackImage(formData);
+
     if (editingItem) {
       updateMenuItem(editingItem.id, {
         ...formData,
-        price: Number(formData.price)
+        price: Number(formData.price),
+        image: validatedImage
       });
     } else {
       addMenuItem({
         ...formData,
         price: Number(formData.price),
-        image: formData.image || imagePresets[formData.category] || imagePresets.Coffee
+        image: validatedImage
       });
     }
     setIsModalOpen(false);
@@ -187,10 +215,15 @@ export default function MenuPage() {
           >
             <div>
               {/* Image banner */}
-              <div className="relative aspect-video bg-gray-100 overflow-hidden">
+              <div className="relative aspect-video bg-[#FAF7F2] overflow-hidden">
                 <img
-                  src={item.image}
+                  src={item.image || getItemFallbackImage(item)}
                   alt={item.name}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = getItemFallbackImage(item);
+                  }}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-2 left-2 flex items-center gap-1.5">
@@ -356,17 +389,91 @@ export default function MenuPage() {
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-[#665A4F] block mb-1">
-                  Image URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full text-xs py-2 px-3 rounded-xl bg-[#FAF7F2] border border-[#E8E0D5] text-[#241A14]"
-                />
+              {/* Dish Image: Live Preview, Upload, & URL */}
+              <div className="space-y-2 bg-[#FAF7F2] p-3.5 rounded-2xl border border-[#E8E0D5]">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-[#5C3A21] flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-[#E58A3A]" />
+                    <span>Dish Photo (Image URL or Upload)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-[#5C3A21] text-white hover:bg-[#4B2E19] flex items-center gap-1 cursor-pointer transition-all shadow-xs"
+                  >
+                    <Upload className="w-3 h-3" />
+                    <span>Upload From Device</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+
+                {/* Live Image Preview + Status Banner */}
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-[#E8E0D5] shrink-0 relative shadow-2xs">
+                    <img
+                      src={formData.image || getItemFallbackImage(formData)}
+                      alt="Dish preview"
+                      onLoad={() => setImageLoadError(false)}
+                      onError={() => setImageLoadError(true)}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <input
+                      type="url"
+                      value={formData.image}
+                      onChange={(e) => {
+                        setFormData({ ...formData, image: e.target.value });
+                        setImageLoadError(false);
+                      }}
+                      placeholder="Paste image link (https://...)"
+                      className="w-full text-xs py-1.5 px-2.5 rounded-xl bg-white border border-[#E8E0D5] text-[#241A14]"
+                    />
+                    <div className="mt-1 flex items-center gap-1 text-[10px]">
+                      {imageLoadError ? (
+                        <span className="text-rose-600 font-bold flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          <span>Link broken / blocked. Will auto-fallback to category photo.</span>
+                        </span>
+                      ) : (
+                        <span className="text-emerald-700 font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Preview verified & ready for customers.</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1-Click Aesthetic Photo Presets */}
+                <div className="pt-2 border-t border-[#E8E0D5]/60 space-y-1">
+                  <span className="text-[10px] font-bold text-[#8A7A6E] block">
+                    Or Pick Guaranteed Aesthetic Photo (1-Click):
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                    {CURATED_FOOD_IMAGES.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, image: preset.url });
+                          setImageLoadError(false);
+                        }}
+                        className="px-2 py-0.5 rounded-lg bg-white hover:bg-amber-50 text-[#5C3A21] border border-[#E8E0D5] text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+                      >
+                        <span>{preset.icon}</span>
+                        <span>{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Toggles */}

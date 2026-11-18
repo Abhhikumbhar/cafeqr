@@ -6,6 +6,7 @@ import ChaiMascotGreeting from '../../components/common/ChaiMascotGreeting';
 import PizzaBuilderModal from '../../components/customer/PizzaBuilderModal';
 import LuckySpinWheelModal from '../../components/customer/LuckySpinWheelModal';
 import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
+import { getItemFallbackImage } from '../../utils/imageFallbacks';
 import {
   Coffee,
   Search,
@@ -520,11 +521,16 @@ export default function CustomerMenuPage() {
             className="bg-white rounded-3xl p-3.5 border border-[#E8E0D5] shadow-sm hover:shadow-md transition-all flex gap-3.5 cursor-pointer relative"
           >
             {/* Dish Image */}
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shrink-0 bg-gray-100">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden shrink-0 bg-[#FAF7F2]">
               <img
-                src={item.image}
+                src={item.image || getItemFallbackImage(item)}
                 alt={item.name}
-                className="w-full h-full object-cover"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = getItemFallbackImage(item);
+                }}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute top-1.5 left-1.5">
                 <span
@@ -618,9 +624,13 @@ export default function CustomerMenuPage() {
             </button>
 
             <img
-              src={selectedItemForModal.image}
+              src={selectedItemForModal.image || getItemFallbackImage(selectedItemForModal)}
               alt={selectedItemForModal.name}
-              className="w-full h-48 object-cover rounded-2xl mb-4"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = getItemFallbackImage(selectedItemForModal);
+              }}
+              className="w-full h-48 object-cover rounded-2xl mb-4 bg-[#FAF7F2]"
             />
 
             <div className="space-y-1 mb-3">
