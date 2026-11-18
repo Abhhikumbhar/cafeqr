@@ -4,6 +4,8 @@ import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
 import ChaiMascotGreeting from '../../components/common/ChaiMascotGreeting';
 import PizzaBuilderModal from '../../components/customer/PizzaBuilderModal';
+import LuckySpinWheelModal from '../../components/customer/LuckySpinWheelModal';
+import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
 import {
   Coffee,
   Search,
@@ -70,6 +72,9 @@ export default function CustomerMenuPage() {
 
   // Pizza Customizer Modal
   const [isPizzaBuilderOpen, setIsPizzaBuilderOpen] = useState(false);
+
+  // Lucky Spin Wheel Modal
+  const [isLuckySpinOpen, setIsLuckySpinOpen] = useState(false);
 
   // Cart state
   const [cartItems, setCartItems] = useState([]);
@@ -363,6 +368,43 @@ export default function CustomerMenuPage() {
 
           {/* Background decorative glow */}
           <div className="absolute right-[-15px] top-[-15px] w-28 h-28 rounded-full bg-amber-400/10 pointer-events-none group-hover:scale-125 transition-transform" />
+        </div>
+      </div>
+
+      {/* Lucky Spin the Wheel & 5-Visit Rewards Banner */}
+      <div className="px-4 sm:px-6 max-w-3xl mx-auto w-full mb-3">
+        <div
+          onClick={() => setIsLuckySpinOpen(true)}
+          className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-[#241A14] via-[#3B281B] to-[#5C3A21] border-2 border-amber-400 text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-between group overflow-hidden relative active:scale-[0.99]"
+        >
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 to-[#D4AF37] text-[#241A14] flex items-center justify-center text-2xl shadow-md transform group-hover:rotate-45 transition-transform shrink-0">
+              🎰
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-extrabold uppercase mb-0.5">
+                <Sparkles className="w-3 h-3 text-amber-300 animate-spin" />
+                <span>Daily Table Treat & Loyalty</span>
+              </div>
+              <h3 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
+                <span>Spin Lucky Wheel & Win Free Treat!</span>
+                <span className="text-amber-300 text-[10px] font-mono">100% Free</span>
+              </h3>
+              <p className="text-[11px] text-amber-100/80">
+                Win Free Kadak Chai, French Fries, or Flat ₹50 OFF. Plus earn 5-Visit VIP Stamps!
+              </p>
+            </div>
+          </div>
+
+          <div className="relative z-10 shrink-0">
+            <button className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#241A14] font-black text-xs shadow-md group-hover:scale-105 transition-all flex items-center gap-1">
+              <span>Spin Now</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Decorative wheel background shimmer */}
+          <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-amber-400/10 pointer-events-none" />
         </div>
       </div>
 
@@ -674,50 +716,48 @@ export default function CustomerMenuPage() {
               ))}
             </div>
 
-            {/* Loyalty Lookup (Name + Phone) */}
-            <div className="bg-[#FAF7F2] p-3.5 rounded-2xl border border-[#E8E0D5] space-y-2">
-              <span className="text-xs font-bold text-[#5C3A21] flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-[#E58A3A]" />
-                Customer Loyalty & Milestone Rewards
-              </span>
+            {/* Loyalty & 5-Visit Punch Pass (Name + Phone) */}
+            <div className="space-y-2">
+              <div className="bg-[#FAF7F2] p-3 rounded-2xl border border-[#E8E0D5] space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#5C3A21] flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-[#E58A3A]" />
+                    Customer Loyalty & 5-Visit Stamp Pass
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsLuckySpinOpen(true)}
+                    className="text-[10px] font-black text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300 transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>🎰</span>
+                    <span>Spin Wheel</span>
+                  </button>
+                </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="tel"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Mobile number"
-                  className="w-full text-xs py-1.5 px-2.5 rounded-xl bg-white border border-[#E8E0D5]"
-                />
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Your Name"
-                  className="w-full text-xs py-1.5 px-2.5 rounded-xl bg-white border border-[#E8E0D5]"
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="tel"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="10-digit mobile"
+                    className="w-full text-xs py-1.5 px-2.5 rounded-xl bg-white border border-[#E8E0D5] font-bold text-[#241A14]"
+                  />
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Your Name (Optional)"
+                    className="w-full text-xs py-1.5 px-2.5 rounded-xl bg-white border border-[#E8E0D5]"
+                  />
+                </div>
               </div>
 
-              {identifiedCustomer && (
-                <div className="text-[11px] text-[#665A4F] pt-1">
-                  <p className="font-bold text-emerald-700">
-                    Welcome back, {identifiedCustomer.name}! ({identifiedCustomer.totalVisits} completed visits)
-                  </p>
-                  {identifiedCustomer.availableCoupons?.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {identifiedCustomer.availableCoupons.map((c, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => handleApplyCoupon(c.code)}
-                          className="px-2 py-0.5 rounded bg-[#5C3A21] text-white text-[10px] font-bold"
-                        >
-                          Use {c.code}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Interactive 5-Visit Digital Punch Card */}
+              <LoyaltyPunchCard
+                customer={identifiedCustomer || (customerPhone ? { name: customerName, visitCount: 0 } : null)}
+                onApplyCoupon={handleApplyCoupon}
+                compact={true}
+              />
             </div>
 
             {/* Coupon Promo code input */}
@@ -779,6 +819,33 @@ export default function CustomerMenuPage() {
           handleAddToCart(item, qty, instructions);
           triggerConfetti();
         }}
+      />
+
+      {/* Floating Lucky Spin Button for Instant Table Engagement */}
+      <button
+        onClick={() => setIsLuckySpinOpen(true)}
+        className="fixed bottom-20 left-4 z-40 px-3.5 py-2.5 rounded-full bg-gradient-to-r from-[#241A14] to-[#5C3A21] text-amber-300 font-black text-xs shadow-xl border-2 border-amber-400 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all cursor-pointer animate-bounce"
+        style={{ animationDuration: '3s' }}
+        title="Spin the Lucky Wheel"
+      >
+        <span className="text-base">🎰</span>
+        <span>Lucky Spin & Win</span>
+      </button>
+
+      {/* Lucky Spin Wheel Interactive Modal */}
+      <LuckySpinWheelModal
+        isOpen={isLuckySpinOpen}
+        onClose={() => setIsLuckySpinOpen(false)}
+        onApplyPrize={(prize) => {
+          if (prize.code) {
+            handleApplyCoupon(prize.code);
+            setIsCartOpen(true);
+          }
+        }}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        triggerConfetti={triggerConfetti}
+        addToast={addToast}
       />
     </div>
   );

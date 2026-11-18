@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
+import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
 import {
   Coffee,
   CheckCircle2,
@@ -16,10 +17,11 @@ import {
 
 export default function CustomerOrderTrackingPage() {
   const { orderId } = useParams();
-  const { orders, updateOrderStatus, addToast } = useCafe();
+  const { orders, updateOrderStatus, getCustomerByPhone, addToast } = useCafe();
 
   // Find order
   const order = orders.find(o => o.id === orderId) || orders[0];
+  const matchedCustomer = order?.customerPhone ? getCustomerByPhone(order.customerPhone) : null;
 
   const steps = [
     { key: 'Order Pending', label: 'Order Received', desc: 'Dispatched to barista & kitchen', icon: Clock },
@@ -211,6 +213,11 @@ export default function CustomerOrderTrackingPage() {
           <span className="text-base text-[#5C3A21]">{formatCurrency(order.total)}</span>
         </div>
       </div>
+
+      {/* 5-Visit Digital VIP Punch Card */}
+      <LoyaltyPunchCard
+        customer={matchedCustomer || { name: order.customerName, visitCount: 1 }}
+      />
 
       {/* Service Action Buttons */}
       <div className="grid grid-cols-2 gap-3 pt-2">

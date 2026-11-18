@@ -897,7 +897,7 @@ export function CafeProvider({ children }) {
       return { valid: true, coupon: found, discount, message: 'Coupon applied!' };
     }
 
-    // Check special dynamic milestone codes
+    // Check special dynamic milestone codes & Lucky Spin prize coupons
     if (upper === 'FIFTHVISIT50' || upper === 'VISIT5' || upper === 'NEXTVISIT50') {
       return {
         valid: true,
@@ -905,6 +905,38 @@ export function CafeProvider({ children }) {
         discount: 50,
         message: '₹50 Milestone Loyalty Discount applied!'
       };
+    }
+
+    if (upper === 'TREAT30') {
+      return {
+        valid: true,
+        coupon: { code: 'TREAT30', discount: 30 },
+        discount: 30,
+        message: '₹30 3rd-Visit Treat applied!'
+      };
+    }
+
+    // Lucky Spin coupons
+    if (upper === 'SPIN-CHAI') {
+      if (subtotal < 80) return { valid: false, message: 'Minimum order of ₹80 required for Free Chai coupon.' };
+      return { valid: true, coupon: { code: 'SPIN-CHAI', discount: 40 }, discount: 40, message: 'Free Chai (₹40 OFF) applied!' };
+    }
+    if (upper === 'SPIN-FRIES') {
+      if (subtotal < 200) return { valid: false, message: 'Minimum order of ₹200 required for Free Fries coupon.' };
+      return { valid: true, coupon: { code: 'SPIN-FRIES', discount: 90 }, discount: 90, message: 'Free Fries (₹90 OFF) applied!' };
+    }
+    if (upper === 'SPIN-15') {
+      if (subtotal < 150) return { valid: false, message: 'Minimum order of ₹150 required for 15% discount.' };
+      const disc = Math.min(Math.round(subtotal * 0.15), 75);
+      return { valid: true, coupon: { code: 'SPIN-15', discount: disc }, discount: disc, message: `15% Discount (₹${disc} OFF) applied!` };
+    }
+    if (upper === 'SPIN-BROWNIE') {
+      if (subtotal < 200) return { valid: false, message: 'Minimum order of ₹200 required for Free Brownie coupon.' };
+      return { valid: true, coupon: { code: 'SPIN-BROWNIE', discount: 80 }, discount: 80, message: 'Free Brownie (₹80 OFF) applied!' };
+    }
+    if (upper === 'SPIN-50') {
+      if (subtotal < 250) return { valid: false, message: 'Minimum order of ₹250 required for ₹50 OFF coupon.' };
+      return { valid: true, coupon: { code: 'SPIN-50', discount: 50 }, discount: 50, message: '₹50 Lucky Spin Discount applied!' };
     }
 
     return { valid: false, message: 'Invalid or expired coupon code' };

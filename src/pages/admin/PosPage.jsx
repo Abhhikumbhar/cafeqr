@@ -3,6 +3,7 @@ import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
 import CashRegisterModal from '../../components/admin/CashRegisterModal';
+import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
 import {
   Calculator,
   Search,
@@ -480,35 +481,14 @@ export default function PosPage() {
               />
             </div>
 
-            {/* Identified Customer Perks / Milestone preview */}
+            {/* Identified Customer Perks / 5-Visit Punch Card */}
             {identifiedCustomer && (
-              <div className="pt-1 text-[11px] text-[#665A4F] space-y-1">
-                <div className="flex justify-between font-semibold">
-                  <span>Loyalty Points: {identifiedCustomer.loyaltyPoints} pts</span>
-                  <span className="text-[#E58A3A]">
-                    {identifiedCustomer.totalVisits === 4
-                      ? '🎯 5th Visit Next: ₹50 OFF!'
-                      : identifiedCustomer.totalVisits === 9
-                      ? '🏆 10th Visit Next: Free Coffee!'
-                      : `${identifiedCustomer.totalVisits} completed visits`}
-                  </span>
-                </div>
-
-                {/* Available customer coupons */}
-                {identifiedCustomer.availableCoupons?.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {identifiedCustomer.availableCoupons.map((c, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleApplyCoupon(c.code)}
-                        className="px-2 py-0.5 rounded-md bg-[#5C3A21] text-white text-[10px] font-bold hover:bg-[#E58A3A] transition-colors flex items-center gap-1"
-                      >
-                        <Sparkles className="w-2.5 h-2.5" />
-                        Apply {c.code} ({c.discount ? `₹${c.discount}` : `${c.discountPercent}%`} OFF)
-                      </button>
-                    ))}
-                  </div>
-                )}
+              <div className="pt-2">
+                <LoyaltyPunchCard
+                  customer={identifiedCustomer}
+                  onApplyCoupon={handleApplyCoupon}
+                  compact={true}
+                />
               </div>
             )}
           </div>

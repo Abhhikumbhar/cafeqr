@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency } from '../../utils/formatters';
+import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
+import LuckySpinWheelModal, { SPIN_PRIZES } from '../../components/customer/LuckySpinWheelModal';
 import {
   Award,
   Sparkles,
@@ -11,15 +13,15 @@ import {
   ShieldCheck,
   Tag,
   Coffee,
+  RotateCw,
+  Eye,
   HeartHandshake
 } from 'lucide-react';
 
 export default function LoyaltyPage() {
   const { coupons, settings, setSettings, addToast, triggerConfetti } = useCafe();
-  const [newCouponCode, setNewCouponCode] = useState('');
-  const [newDiscount, setNewDiscount] = useState('');
-  const [newMinBill, setNewMinBill] = useState('');
-  const [newDesc, setNewDesc] = useState('');
+  const [demoVisitCount, setDemoVisitCount] = useState(4);
+  const [isTestSpinOpen, setIsTestSpinOpen] = useState(false);
 
   const milestones = [
     {
@@ -86,16 +88,128 @@ export default function LoyaltyPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            triggerConfetti();
-            addToast('Triggering celebration animation demo!', 'success');
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setIsTestSpinOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#241A14] to-[#5C3A21] text-amber-300 border border-amber-400 text-xs font-black shadow-md hover:scale-105 transition-all"
+          >
+            <span>🎰</span>
+            <span>Test Spin Wheel (Customer Demo)</span>
+          </button>
+
+          <button
+            onClick={() => {
+              triggerConfetti();
+              addToast('Triggering celebration animation demo!', 'success');
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#E58A3A] hover:bg-[#D77A28] text-white text-xs font-bold shadow-md shadow-[#E58A3A]/20 transition-all"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Test Confetti Celebration</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 1. Live 5-Visit VIP Punch Card Simulator */}
+      <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E0D5] pb-3">
+          <div>
+            <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+              <Award className="w-5 h-5 text-[#5C3A21]" />
+              5-Visit Digital VIP Punch Card (Live Customer View)
+            </h3>
+            <p className="text-xs text-[#8A7A6E]">
+              Customers see this interactive stamp card when scanning QR or ordering at their table.
+            </p>
+          </div>
+
+          {/* Visit Count Simulator Selector */}
+          <div className="flex items-center gap-1.5 bg-[#FAF7F2] p-1.5 rounded-2xl border border-[#E8E0D5]">
+            <span className="text-[11px] font-bold text-[#5C3A21] px-2">Simulate Visits:</span>
+            {[1, 2, 3, 4, 5].map((v) => (
+              <button
+                key={v}
+                onClick={() => setDemoVisitCount(v)}
+                className={`w-7 h-7 rounded-xl text-xs font-black transition-all ${
+                  demoVisitCount === v
+                    ? 'bg-[#5C3A21] text-white shadow-xs'
+                    : 'bg-white text-[#665A4F] hover:bg-gray-100'
+                }`}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* The Card Component */}
+        <LoyaltyPunchCard
+          customer={{
+            name: 'Sample Guest',
+            visitCount: demoVisitCount,
+            loyaltyPoints: demoVisitCount * 45,
+            availableCoupons: demoVisitCount >= 3 ? [{ code: 'TREAT30', discount: 30 }] : []
           }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#E58A3A] hover:bg-[#D77A28] text-white text-xs font-bold shadow-md shadow-[#E58A3A]/20 transition-all self-start sm:self-auto"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>Test Confetti Celebration</span>
-        </button>
+          onApplyCoupon={(code) => addToast(`Simulated applying coupon: ${code}`, 'success')}
+        />
+      </div>
+
+      {/* 2. Lucky Spin the Wheel Campaign Manager */}
+      <div className="bg-white rounded-3xl p-6 border border-[#E8E0D5] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E0D5] pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-[#D4AF37] flex items-center justify-center text-xl shadow-xs">
+              🎰
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-[#241A14] flex items-center gap-2">
+                Lucky Spin & Win Campaign Manager
+              </h3>
+              <p className="text-xs text-[#8A7A6E]">
+                Engage table guests with daily digital wheel spins. Drives viral sharing and builds phone number CRM.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black border border-emerald-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              Active on QR Menus
+            </span>
+            <button
+              onClick={() => setIsTestSpinOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-[#5C3A21] hover:bg-[#4A2E1A] text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Launch Live Wheel</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Prize Wheel Slices Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+          {SPIN_PRIZES.map((prize) => (
+            <div
+              key={prize.id}
+              className="p-3.5 rounded-2xl border border-[#E8E0D5] bg-[#FAF7F2] text-center space-y-1.5 shadow-2xs"
+            >
+              <div className="text-2xl">{prize.icon}</div>
+              <h5 className="font-extrabold text-xs text-[#241A14] truncate">{prize.label}</h5>
+              {prize.code ? (
+                <span className="inline-block px-2 py-0.5 rounded-md bg-white border border-[#E8E0D5] font-mono text-[10px] font-black text-[#5C3A21]">
+                  {prize.code}
+                </span>
+              ) : (
+                <span className="inline-block px-2 py-0.5 rounded-md bg-gray-200 text-gray-700 font-mono text-[10px] font-bold">
+                  No Code
+                </span>
+              )}
+              <p className="text-[10px] text-[#8A7A6E] line-clamp-2 leading-tight">
+                {prize.description}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Strict Anti-Fraud / Business Rules Callout */}
@@ -204,6 +318,15 @@ export default function LoyaltyPage() {
           ))}
         </div>
       </div>
+
+      {/* Lucky Spin Wheel Live Preview Modal */}
+      <LuckySpinWheelModal
+        isOpen={isTestSpinOpen}
+        onClose={() => setIsTestSpinOpen(false)}
+        customerPhone="9876543210"
+        triggerConfetti={triggerConfetti}
+        addToast={addToast}
+      />
     </div>
   );
 }
