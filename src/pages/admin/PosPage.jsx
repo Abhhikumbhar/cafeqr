@@ -4,6 +4,7 @@ import { formatCurrency, formatDateTime } from '../../utils/formatters';
 import ThermalReceiptModal from '../../components/common/ThermalReceiptModal';
 import CashRegisterModal from '../../components/admin/CashRegisterModal';
 import LoyaltyPunchCard from '../../components/common/LoyaltyPunchCard';
+import { getItemFallbackImage } from '../../utils/imageFallbacks';
 import {
   Calculator,
   Search,
@@ -379,10 +380,14 @@ export default function PosPage() {
                 }`}
               >
                 <div>
-                  <div className="relative mb-2.5 rounded-xl overflow-hidden aspect-video bg-gray-200">
+                  <div className="relative mb-2.5 rounded-xl overflow-hidden aspect-video bg-[#FAF7F2]">
                     <img
-                      src={item.image}
+                      src={item.image || getItemFallbackImage(item)}
                       alt={item.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = getItemFallbackImage(item);
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
                     <div className="absolute top-1.5 left-1.5 flex items-center gap-1">

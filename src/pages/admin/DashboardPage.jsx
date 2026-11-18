@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCafe } from '../../context/CafeContext';
 import { formatCurrency, formatDateTime, STATUS_COLORS } from '../../utils/formatters';
+import { getItemFallbackImage } from '../../utils/imageFallbacks';
 import {
   IndianRupee,
   ShoppingBag,
@@ -424,9 +425,13 @@ export default function DashboardPage() {
                 <div key={item.id} className="flex items-center gap-3">
                   <div className="relative">
                     <img
-                      src={item.image}
+                      src={item.image || getItemFallbackImage(item)}
                       alt={item.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-[#E8E0D5]"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = getItemFallbackImage(item);
+                      }}
+                      className="w-12 h-12 rounded-xl object-cover border border-[#E8E0D5] bg-[#FAF7F2]"
                     />
                     <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-[#5C3A21] text-white text-[10px] font-bold flex items-center justify-center">
                       #{index + 1}
