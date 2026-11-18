@@ -245,10 +245,10 @@ export default function CustomerMenuPage() {
             <Coffee className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-extrabold text-sm text-[#241A14] tracking-tight flex items-center gap-1.5">
+            <h1 className="font-aesthetic-serif italic font-extrabold text-base text-[#241A14] tracking-wide flex items-center gap-1.5">
               {settings.cafeName || 'The 7 Cafe'}
             </h1>
-            <p className="text-[10px] text-[#8A7A6E]">Digital Table Service</p>
+            <p className="font-aesthetic-cursive text-xs text-[#75553E] font-bold tracking-wide -mt-0.5">~ coffee & conversations ~</p>
           </div>
         </div>
 
@@ -301,8 +301,8 @@ export default function CustomerMenuPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
               📍 {currentTable.name} Scanned • Direct KOT
             </span>
-            <h2 className="text-xl sm:text-2xl font-black">
-              Welcome to {settings.cafeName || 'The 7 Cafe'}
+            <h2 className="text-xl sm:text-2xl font-bold">
+              Welcome to <span className="font-aesthetic-serif italic font-extrabold tracking-wider text-amber-200">{settings.cafeName || 'The 7 Cafe'}</span>
             </h2>
             <p className="text-xs text-[#C8BAAA]">
               Order directly from your phone. Items are freshly handcrafted and sent straight to the barista & kitchen!

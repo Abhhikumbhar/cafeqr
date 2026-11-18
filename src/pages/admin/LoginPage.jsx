@@ -38,9 +38,12 @@ export default function LoginPage() {
           <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-[#E58A3A] to-[#5C3A21] flex items-center justify-center mx-auto shadow-lg shadow-[#E58A3A]/30">
             <Coffee className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-black text-[#241A14] tracking-tight">
+          <h1 className="text-3xl font-aesthetic-serif italic font-extrabold text-[#241A14] tracking-wider">
             The 7 Cafe
           </h1>
+          <p className="font-aesthetic-cursive text-base text-[#75553E] font-bold tracking-wide -mt-1">
+            ~ coffee & conversations ~
+          </p>
           <p className="text-xs text-[#8A7A6E]">
             Smart Cafe Management & Multi-Table POS System
           </p>

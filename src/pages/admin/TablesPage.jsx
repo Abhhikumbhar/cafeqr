@@ -277,12 +277,15 @@ export default function TablesPage() {
 
             {/* Printable Single Table QR Stand Card */}
             <div className="printable-area p-6 bg-gradient-to-b from-[#FAF7F2] to-white rounded-3xl border border-[#E8E0D5] shadow-inner mb-4">
-              <div className="flex items-center justify-center gap-2 mb-1">
+              <div className="flex items-center justify-center gap-2 mb-0.5">
                 <Coffee className="w-5 h-5 text-[#E58A3A]" />
-                <span className="font-extrabold text-lg tracking-tight text-[#241A14]">
+                <span className="font-aesthetic-serif italic font-extrabold text-xl tracking-wider text-[#241A14]">
                   {settings.cafeName || 'The 7 Cafe'}
                 </span>
               </div>
+              <p className="font-aesthetic-cursive text-sm text-[#75553E] font-bold tracking-wide mb-2">
+                ~ coffee & conversations ~
+              </p>
               <p className="text-[11px] text-[#8A7A6E] mb-3">
                 Scan to browse menu & order directly
               </p>
@@ -377,7 +380,7 @@ export default function TablesPage() {
                 >
                   <div className="flex items-center justify-center gap-1.5 mb-1">
                     <Coffee className="w-4 h-4 text-[#E58A3A]" />
-                    <span className="font-extrabold text-sm text-[#241A14]">
+                    <span className="font-aesthetic-serif italic font-extrabold text-sm tracking-wide text-[#241A14]">
                       {settings.cafeName || 'The 7 Cafe'}
                     </span>
                   </div>

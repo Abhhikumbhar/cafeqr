@@ -77,10 +77,13 @@ export default function DashboardPage() {
             </span>
             <span className="text-xs text-[#C8BAAA]">Live System</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-aesthetic-serif italic font-extrabold text-white tracking-wider drop-shadow-sm">
             {settings.cafeName || 'The 7 Cafe'}
           </h2>
-          <p className="text-sm text-[#C8BAAA] mt-1">
+          <p className="font-aesthetic-cursive text-base sm:text-lg text-[#E58A3A] font-bold tracking-wider -mt-0.5 mb-1">
+            ~ coffee & conversations ~
+          </p>
+          <p className="text-sm text-[#C8BAAA]">
             Seamless table management, QR self-ordering, automated kitchen display, and loyalty perks.
           </p>
         </div>
